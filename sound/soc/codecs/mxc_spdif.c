@@ -883,6 +883,8 @@ static int mxc_spdif_capture_get(struct snd_kcontrol *kcontrol,
 {
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct mxc_spdif_priv *spdif_priv = snd_soc_codec_get_drvdata(codec);
+	return -EAGAIN;
+
 	struct mxc_spdif_platform_data *plat_data = spdif_priv->plat_data;
 	unsigned int cstatus;
 
