@@ -626,10 +626,41 @@ static __init void wand_init_wifi(void) {
 
 
 /* ------------------------------------------------------------------------ */
+#include <mach/imx_rfkill.h>
+
+static void wandboard_bt_reset(void)
+{
+	printk(KERN_INFO "wandboard_bt_reset");
+#if 0
+	gpio_request(SABRESD_BT_RESET, "bt-reset");
+	gpio_direction_output(SABRESD_BT_RESET, 0);
+	/* pull down reset pin at least >5ms */
+	mdelay(6);
+	/* pull up after power supply BT */
+	gpio_direction_output(SABRESD_BT_RESET, 1);
+	gpio_free(SABRESD_BT_RESET);
+	msleep(100);
+#endif
+}
+
+static int wandboard_bt_power_change(int status)
+{
+	if (status)
+		wandboard_bt_reset();
+	return 0;
+}
+
+static struct platform_device wandboard_bt_rfkill = {
+	.name = "mxc_bt_rfkill",
+};
+
+static struct imx_bt_rfkill_platform_data wandboard_bt_rfkill_data = {
+	.power_change = wandboard_bt_power_change,
+};
+
 
 static const struct imxuart_platform_data wand_bt_uart_data = {
-	.flags = IMXUART_HAVE_RTSCTS,// | IMXUART_SDMA,
-//        .flags = IMXUART_HAVE_RTSCTS | IMXUART_SDMA,
+	.flags = IMXUART_HAVE_RTSCTS,
 	.dma_req_tx = MX6Q_DMA_REQ_UART3_TX,
 	.dma_req_rx = MX6Q_DMA_REQ_UART3_RX,
 };
@@ -642,6 +673,8 @@ static __init void wand_init_bluetooth(void) {
 	wand_mux_pads_init_bluetooth();
 
 	imx6q_add_imx_uart(2, &wand_bt_uart_data);
+
+	mxc_register_device(&wandboard_bt_rfkill, &wandboard_bt_rfkill_data);
 
 	gpio_request(WAND_BT_ON, "bt_on");
 	gpio_direction_output(WAND_BT_ON, 0);
