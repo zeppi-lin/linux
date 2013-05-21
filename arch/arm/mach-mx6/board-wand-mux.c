@@ -234,4 +234,63 @@ void wand_mux_pads_init_spi(void)
 	EDM_SET_PAD(PAD_EIM_LBA__GPIO_2_27);
 }
 
+/****************************************************************************
+ *                                                                          
+ * LCDIF - DISPLAY PARALLEL INTERFACE
+ *                                                                          
+ ****************************************************************************/
+
+void wand_mux_pads_init_lcdif(void)
+{
+	EDM_SET_PAD(PAD_DI0_DISP_CLK__IPU1_DI0_DISP_CLK);
+	EDM_SET_PAD(PAD_DI0_PIN2__IPU1_DI0_PIN2);		// HSync 
+	EDM_SET_PAD(PAD_DI0_PIN3__IPU1_DI0_PIN3);		// VSync 
+	EDM_SET_PAD(PAD_DI0_PIN4__IPU1_DI0_PIN4);		// Contrast 
+	EDM_SET_PAD(PAD_DI0_PIN15__IPU1_DI0_PIN15);		// DISP0_DRDY 
+	EDM_SET_PAD(PAD_DISP0_DAT0__IPU1_DISP0_DAT_0);
+	EDM_SET_PAD(PAD_DISP0_DAT1__IPU1_DISP0_DAT_1);
+	EDM_SET_PAD(PAD_DISP0_DAT2__IPU1_DISP0_DAT_2);
+	EDM_SET_PAD(PAD_DISP0_DAT3__IPU1_DISP0_DAT_3);
+	EDM_SET_PAD(PAD_DISP0_DAT4__IPU1_DISP0_DAT_4);
+	EDM_SET_PAD(PAD_DISP0_DAT5__IPU1_DISP0_DAT_5);
+	EDM_SET_PAD(PAD_DISP0_DAT6__IPU1_DISP0_DAT_6);
+	EDM_SET_PAD(PAD_DISP0_DAT7__IPU1_DISP0_DAT_7);
+	EDM_SET_PAD(PAD_DISP0_DAT8__IPU1_DISP0_DAT_8);
+	EDM_SET_PAD(PAD_DISP0_DAT9__IPU1_DISP0_DAT_9);
+	EDM_SET_PAD(PAD_DISP0_DAT10__IPU1_DISP0_DAT_10);
+	EDM_SET_PAD(PAD_DISP0_DAT11__IPU1_DISP0_DAT_11);
+	EDM_SET_PAD(PAD_DISP0_DAT12__IPU1_DISP0_DAT_12);
+	EDM_SET_PAD(PAD_DISP0_DAT13__IPU1_DISP0_DAT_13);
+	EDM_SET_PAD(PAD_DISP0_DAT14__IPU1_DISP0_DAT_14);
+	EDM_SET_PAD(PAD_DISP0_DAT15__IPU1_DISP0_DAT_15);
+	EDM_SET_PAD(PAD_DISP0_DAT16__IPU1_DISP0_DAT_16);
+	EDM_SET_PAD(PAD_DISP0_DAT17__IPU1_DISP0_DAT_17);
+	EDM_SET_PAD(PAD_DISP0_DAT18__IPU1_DISP0_DAT_18);
+	EDM_SET_PAD(PAD_DISP0_DAT19__IPU1_DISP0_DAT_19);
+	EDM_SET_PAD(PAD_DISP0_DAT20__IPU1_DISP0_DAT_20);
+	EDM_SET_PAD(PAD_DISP0_DAT21__IPU1_DISP0_DAT_21);
+	EDM_SET_PAD(PAD_DISP0_DAT22__IPU1_DISP0_DAT_22);
+	EDM_SET_PAD(PAD_DISP0_DAT23__IPU1_DISP0_DAT_23);
+}
+
+/****************************************************************************
+ *                                                                          
+ * LDB - LVDS Display
+ *                                                                          
+ ****************************************************************************/
+
+void wand_mux_pads_init_lvds(void)
+{
+        EDM_SET_PAD(PAD_SD4_DAT0__GPIO_2_8);
+        EDM_SET_PAD(PAD_SD4_DAT1__GPIO_2_9);
+        EDM_SET_PAD(PAD_SD4_DAT2__GPIO_2_10);
+        EDM_SET_PAD(PAD_SD4_DAT3__GPIO_2_11);
+        
+        EDM_SET_PAD(PAD_LVDS0_CLK_P__LDB_LVDS0_CLK);
+        EDM_SET_PAD(PAD_LVDS0_TX0_P__LDB_LVDS0_TX0);
+        EDM_SET_PAD(PAD_LVDS0_TX1_P__LDB_LVDS0_TX1);
+        EDM_SET_PAD(PAD_LVDS0_TX2_P__LDB_LVDS0_TX2);
+        EDM_SET_PAD(PAD_LVDS0_TX3_P__LDB_LVDS0_TX3);
+}
+
 

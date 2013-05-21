@@ -23,5 +23,7 @@ extern void wand_mux_pads_init_audio(void);
 extern void wand_mux_pads_init_uart(void);
 extern void wand_mux_pads_init_i2c(int port);
 extern void wand_mux_pads_init_sdmmc(unsigned int port, int speed);
+extern void wand_mux_pads_init_lcdif(void);
+extern void wand_mux_pads_init_lvds(void);
 
 #endif

@@ -387,34 +387,11 @@ static __init void wand_init_usb(void) {
 
 /****************************************************************************
  *                                                                          
- * HDMI
+ * CORE DISPLAY
  *                                                                          
  ****************************************************************************/
 
-static struct ipuv3_fb_platform_data wand_hdmi_fb[] = {
-	{ /*fb0*/
-	.disp_dev = "hdmi",
-	.interface_pix_fmt = IPU_PIX_FMT_RGB24,
-	.mode_str = "1920x1080M@60",
-	.default_bpp = 32,
-	.int_clk = false,
-	.late_init = false,
-	},
-};
-
-static struct imx_ipuv3_platform_data wand_ipu_data[] = {
-	{
-		.rev = 4,
-		.csi_clk[0] = "clko_clk",
-		.bypass_reset = false,
-	}, {
-		.rev = 4,
-		.csi_clk[0] = "clko_clk",
-		.bypass_reset = false,
-	},
-};
-
-/* ------------------------------------------------------------------------ */
+/* HDMI------------------------------------------------------------------------ */
 
 #include <linux/mfd/mxc-hdmi-core.h>
 
@@ -448,7 +425,91 @@ static const struct i2c_board_info wand_hdmi_i2c_info = {
 	I2C_BOARD_INFO("mxc_hdmi_i2c", 0x50),
 };
 
+static void wand_init_display_hdmi(void) {
+
+	i2c_register_board_info(0, &wand_hdmi_i2c_info, 1);
+
+	imx6q_add_mxc_hdmi_core(&wand_hdmi_core_data);
+	imx6q_add_mxc_hdmi(&wand_hdmi_data);
+        /* Enable HDMI audio */
+	imx6q_add_hdmi_soc();
+	imx6q_add_hdmi_soc_dai();        
+//	mxc_iomux_set_gpr_register(0, 0, 1, 1);
+}
+
 /* ------------------------------------------------------------------------ */
+
+/*******LVDS*************/
+static struct fsl_mxc_ldb_platform_data wand_ldb_data = {
+	.ipu_id = 0,
+	.disp_id = 1,
+	.ext_ref = 1,
+	.mode = LDB_DUL_DI1,//LDB_SEP1,
+	.sec_ipu_id = 0,
+	.sec_disp_id = 0,
+};
+
+static void wand_init_display_lvds(void) {
+	wand_mux_pads_init_lvds();
+
+        gpio_request(IMX_GPIO_NR(2, 8), "lvds0_en");
+        gpio_direction_output(IMX_GPIO_NR(2, 8), 1);
+
+        gpio_request(IMX_GPIO_NR(2, 9), "lvds0_blt_ctrl");
+        gpio_direction_output(IMX_GPIO_NR(2, 9), 1);
+
+        gpio_request(IMX_GPIO_NR(2, 10), "disp0_bklen");
+        gpio_direction_output(IMX_GPIO_NR(2, 10), 1);
+
+        gpio_request(IMX_GPIO_NR(2, 11), "disp0_vdden");
+        gpio_direction_output(IMX_GPIO_NR(2, 11), 1);
+
+	imx6q_add_ldb(&wand_ldb_data);
+}
+
+/****************************/
+static void wand_init_display_lcdif(void) {
+	wand_mux_pads_init_lcdif();
+
+}
+/**************************/
+
+static struct ipuv3_fb_platform_data wand_fb_pdata[] = {
+	{ /*fb0*/
+	.disp_dev = "ldb",
+	.interface_pix_fmt = IPU_PIX_FMT_RGB666,
+	.mode_str = "LDB-XGA",
+	.default_bpp = 16,
+	.int_clk = false,
+	.late_init = false,
+	}, {
+	.disp_dev = "hdmi",
+	.interface_pix_fmt = IPU_PIX_FMT_RGB24,
+	.mode_str = "1920x1080M@60",
+	.default_bpp = 32,
+	.int_clk = false,
+	.late_init = false,
+	}, {
+	.disp_dev = "ldb",
+	.interface_pix_fmt = IPU_PIX_FMT_RGB666,
+	.mode_str = "LDB-XGA",
+	.default_bpp = 16,
+	.int_clk = false,
+	.late_init = false,
+	},
+};
+
+static struct imx_ipuv3_platform_data wand_ipu_data[] = {
+	{
+		.rev = 4,
+		.csi_clk[0] = "clko_clk",
+		.bypass_reset = false,
+	}, {
+		.rev = 4,
+		.csi_clk[0] = "clko_clk",
+		.bypass_reset = false,
+	},
+};
 
 static __init void wand_init_ipu(void) {
 	int i;
@@ -457,18 +518,11 @@ static __init void wand_init_ipu(void) {
 
 	if (cpu_is_mx6q()) {
 		imx6q_add_ipuv3(1, &wand_ipu_data[1]);
-		for (i = 0; i < 4 && i < ARRAY_SIZE(wand_hdmi_fb); i++)
-			imx6q_add_ipuv3fb(i, &wand_hdmi_fb[i]);
+		for (i = 0; i < 4 && i < ARRAY_SIZE(wand_fb_pdata); i++)
+			imx6q_add_ipuv3fb(i, &wand_fb_pdata[i]);
 	} else
-		for (i = 0; i < 2 && i < ARRAY_SIZE(wand_hdmi_fb); i++)
-			imx6q_add_ipuv3fb(i, &wand_hdmi_fb[i]);
-}
-
-/* ------------------------------------------------------------------------ */
-
-static void wand_init_display_hdmi(void) {
-
-	i2c_register_board_info(0, &wand_hdmi_i2c_info, 1);
+		for (i = 0; i < 2 && i < ARRAY_SIZE(wand_fb_pdata); i++)
+			imx6q_add_ipuv3fb(i, &wand_fb_pdata[i]);
 
 	/*
 	 * MX6DL/Solo only supports single IPU
@@ -478,16 +532,22 @@ static void wand_init_display_hdmi(void) {
 	 * MX6DL/Solo
 	 */
 	if (cpu_is_mx6dl()) {
+		wand_ldb_data.ipu_id = 0;
+		wand_ldb_data.disp_id = 1;
 		wand_hdmi_core_data.ipu_id = 0;
 		wand_hdmi_core_data.disp_id = 0;
+		wand_ldb_data.sec_ipu_id = 0;
 	}
-	imx6q_add_mxc_hdmi_core(&wand_hdmi_core_data);
-	imx6q_add_mxc_hdmi(&wand_hdmi_data);
-        /* Enable HDMI audio */
-	imx6q_add_hdmi_soc();
-	imx6q_add_hdmi_soc_dai();        
-//	mxc_iomux_set_gpr_register(0, 0, 1, 1);
+
 }
+
+static void wand_init_display(void) {
+	wand_init_display_hdmi();
+	wand_init_display_lvds();
+/*	wand_init_display_lcdif();	*/
+}
+
+/* ------------------------------------------------------------------------ */
 
 /****************************************************************************
  *                                                                          
@@ -910,7 +970,7 @@ static void __init fixup_wand_board(struct machine_desc *desc, struct tag *tags,
 	char *str;
 	struct tag *t;
 	int i = 0;
-	struct ipuv3_fb_platform_data *pdata_fb = wand_hdmi_fb;
+	struct ipuv3_fb_platform_data *pdata_fb = wand_fb_pdata;
 
 	for_each_tag(t, tags) {
 		if (t->hdr.tag == ATAG_CMDLINE) {
@@ -920,7 +980,7 @@ static void __init fixup_wand_board(struct machine_desc *desc, struct tag *tags,
 				str += 6;
 				pdata_fb[i++].res_size[0] = memparse(str, &str);
 				while (*str == ',' &&
-					i < ARRAY_SIZE(wand_hdmi_fb)) {
+					i < ARRAY_SIZE(wand_fb_pdata)) {
 					str++;
 					pdata_fb[i++].res_size[0] = memparse(str, &str);
 				}
@@ -982,24 +1042,24 @@ static void __init wand_reserve(void)
 	 * Reserve primary framebuffer memory if its base address
 	 * is set by kernel command line.
 	 */
-	fb_array_size = ARRAY_SIZE(wand_hdmi_fb);
-	if (fb_array_size > 0 && wand_hdmi_fb[0].res_base[0] &&
-	    wand_hdmi_fb[0].res_size[0]) {
-		memblock_reserve(wand_hdmi_fb[0].res_base[0],
-				 wand_hdmi_fb[0].res_size[0]);
-		memblock_remove(wand_hdmi_fb[0].res_base[0],
-				wand_hdmi_fb[0].res_size[0]);
-		wand_hdmi_fb[0].late_init = true;
-		wand_ipu_data[0].bypass_reset = true;
+	fb_array_size = ARRAY_SIZE(wand_fb_pdata);
+	if (fb_array_size > 0 && wand_fb_pdata[0].res_base[0] &&
+	    wand_fb_pdata[0].res_size[0]) {
+		memblock_reserve(wand_fb_pdata[0].res_base[0],
+				 wand_fb_pdata[0].res_size[0]);
+		memblock_remove(wand_fb_pdata[0].res_base[0],
+				wand_fb_pdata[0].res_size[0]);
+		wand_fb_pdata[0].late_init = true;
+		wand_ipu_data[wand_ldb_data.ipu_id].bypass_reset = true;
 		fb0_reserved = 1;
 	}
 	for (i = fb0_reserved; i < fb_array_size; i++)
-		if (wand_hdmi_fb[i].res_size[0]) {
+		if (wand_fb_pdata[i].res_size[0]) {
 			/* Reserve for other background buffer. */
-			phys = memblock_alloc(wand_hdmi_fb[i].res_size[0],
+			phys = memblock_alloc(wand_fb_pdata[i].res_size[0],
 						SZ_4K);
-			memblock_remove(phys, wand_hdmi_fb[i].res_size[0]);
-			wand_hdmi_fb[i].res_base[0] = phys;
+			memblock_remove(phys, wand_fb_pdata[i].res_size[0]);
+			wand_fb_pdata[i].res_base[0] = phys;
 		}
 
 #ifdef CONFIG_ANDROID_RAM_CONSOLE
@@ -1071,7 +1131,7 @@ static void __init wand_board_init(void) {
 	wand_init_ethernet();
 	wand_init_usb();
 	wand_init_ipu();
-	wand_init_display_hdmi();
+	wand_init_display();
 	wand_init_ion();
 
 #if defined(CONFIG_IMX_HAVE_PLATFORM_IMX2_WDT) && defined(CONFIG_IMX2_WDT)
