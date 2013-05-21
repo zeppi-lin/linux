@@ -468,8 +468,16 @@ static void wand_init_display_lvds(void) {
 }
 
 /****************************/
+
+static struct fsl_mxc_lcd_platform_data wand_lcdif_data = {
+	.ipu_id = 0,
+	.disp_id = 0,
+	.default_ifmt = IPU_PIX_FMT_RGB565,
+};
+
 static void wand_init_display_lcdif(void) {
 	wand_mux_pads_init_lcdif();
+	imx6q_add_lcdif(&wand_lcdif_data);
 
 }
 /**************************/
