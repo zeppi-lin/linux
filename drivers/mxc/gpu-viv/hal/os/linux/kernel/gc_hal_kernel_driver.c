@@ -1103,7 +1103,7 @@ static int __devinit gpu_probe(struct platform_device *pdev)
     return ret;
 }
 
-static int __devinit gpu_remove(struct platform_device *pdev)
+static int __devexit gpu_remove(struct platform_device *pdev)
 {
     gcmkHEADER();
 #if gcdENABLE_FSCALE_VAL_ADJUST
@@ -1115,7 +1115,7 @@ static int __devinit gpu_remove(struct platform_device *pdev)
     return 0;
 }
 
-static int __devinit gpu_suspend(struct platform_device *dev, pm_message_t state)
+static int gpu_suspend(struct platform_device *dev, pm_message_t state)
 {
     gceSTATUS status;
     gckGALDEVICE device;
@@ -1165,7 +1165,7 @@ static int __devinit gpu_suspend(struct platform_device *dev, pm_message_t state
     return 0;
 }
 
-static int __devinit gpu_resume(struct platform_device *dev)
+static int gpu_resume(struct platform_device *dev)
 {
     gceSTATUS status;
     gckGALDEVICE device;
@@ -1264,7 +1264,7 @@ static const struct dev_pm_ops gpu_pm_ops = {
 
 static struct platform_driver gpu_driver = {
     .probe      = gpu_probe,
-    .remove     = gpu_remove,
+    .remove     = __devexit_p(gpu_remove),
 
     .suspend    = gpu_suspend,
     .resume     = gpu_resume,
