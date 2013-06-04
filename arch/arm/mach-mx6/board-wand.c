@@ -957,6 +957,7 @@ static struct ion_platform_data wand_ion_data = {
 		.type = ION_HEAP_TYPE_CARVEOUT,
 		.name = "vpu_ion",
 		.size = SZ_16M,
+		.cacheable = 1,
 		},
 	},
 };
