@@ -699,16 +699,11 @@ static __init void wand_init_wifi(void) {
 static void wandboard_bt_reset(void)
 {
 	printk(KERN_INFO "wandboard_bt_reset");
-#if 0
-	gpio_request(SABRESD_BT_RESET, "bt-reset");
-	gpio_direction_output(SABRESD_BT_RESET, 0);
-	/* pull down reset pin at least >5ms */
-	mdelay(6);
-	/* pull up after power supply BT */
-	gpio_direction_output(SABRESD_BT_RESET, 1);
-	gpio_free(SABRESD_BT_RESET);
+
+        gpio_direction_output(WAND_BT_ON, 0);
+        msleep(11);
+        gpio_set_value(WAND_BT_ON, 1);
 	msleep(100);
-#endif
 }
 
 static int wandboard_bt_power_change(int status)
