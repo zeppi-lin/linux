@@ -617,11 +617,22 @@ static int wand_sata_init(struct device *dev, void __iomem *addr)
 	tmpdata = clk_get_rate(clk) / 1000;
 	clk_put(clk);
 
+#ifdef CONFIG_SATA_AHCI_PLATFORM
 	ret = sata_init(addr, tmpdata);
 	if (ret == 0)
 		return ret;
+#else
+	usleep_range(1000, 2000);
+	/* AHCI PHY enter into PDDQ mode if the AHCI module is not enabled */
+	tmpdata = readl(addr + PORT_PHY_CTL);
+	writel(tmpdata | PORT_PHY_CTL_PDDQ_LOC, addr + PORT_PHY_CTL);
+	pr_info("No AHCI save PWR: PDDQ %s\n", ((readl(addr + PORT_PHY_CTL)
+					>> 20) & 1) ? "enabled" : "disabled");
+#endif
 
 release_sata_clk:
+	/* disable SATA_PHY PLL */
+	writel((readl(IOMUXC_GPR13) & ~0x2), IOMUXC_GPR13);
 	clk_disable(wand_sata_clk);
 put_sata_clk:
 	clk_put(wand_sata_clk);
@@ -629,6 +640,7 @@ put_sata_clk:
 	return ret;
 }
 
+#ifdef CONFIG_SATA_AHCI_PLATFORM
 static void wand_sata_exit(struct device *dev)
 {
 	clk_disable(wand_sata_clk);
@@ -639,13 +651,19 @@ static struct ahci_platform_data wand_sata_data = {
 	.init = wand_sata_init,
 	.exit = wand_sata_exit,
 };
-
+#endif
 
 static __init void wand_init_ahci(void)
 {
 	/* SATA is not supported by MX6DL/Solo */
 	if (cpu_is_mx6q())
+#ifdef CONFIG_SATA_AHCI_PLATFORM
 		imx6q_add_ahci(0, &wand_sata_data);
+#else
+		wand_sata_init(NULL,
+			(void __iomem *)ioremap(MX6Q_SATA_BASE_ADDR, SZ_4K));
+#endif
+
 }
 
 #else
