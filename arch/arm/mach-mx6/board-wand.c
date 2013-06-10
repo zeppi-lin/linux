@@ -696,20 +696,18 @@ static __init void wand_init_wifi(void) {
 /* ------------------------------------------------------------------------ */
 #include <mach/imx_rfkill.h>
 
-static void wandboard_bt_reset(void)
-{
-	printk(KERN_INFO "wandboard_bt_reset");
-
-        gpio_direction_output(WAND_BT_ON, 0);
-        msleep(11);
-        gpio_set_value(WAND_BT_ON, 1);
-	msleep(100);
-}
-
 static int wandboard_bt_power_change(int status)
 {
-	if (status)
-		wandboard_bt_reset();
+	if(status){
+		printk(KERN_INFO "wandboard_bt_on\n");
+		gpio_set_value(WAND_BT_ON, 1);
+		msleep(100);
+	}
+	else{
+		printk(KERN_INFO "wandboard_bt_off\n");
+		gpio_direction_output(WAND_BT_ON, 0);
+		msleep(11);
+	}
 	return 0;
 }
 
