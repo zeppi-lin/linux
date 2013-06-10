@@ -546,13 +546,13 @@ static __init void wand_init_ipu(void) {
 		wand_hdmi_core_data.disp_id = 0;
 		wand_ldb_data.sec_ipu_id = 0;
 	}
-
+	imx6q_add_vdoa();
 }
 
 static void wand_init_display(void) {
 	wand_init_display_hdmi();
 	wand_init_display_lvds();
-/*	wand_init_display_lcdif();	*/
+	wand_init_display_lcdif();
 }
 
 /* ------------------------------------------------------------------------ */
@@ -968,6 +968,7 @@ static struct ion_platform_data wand_ion_data = {
 		.type = ION_HEAP_TYPE_CARVEOUT,
 		.name = "vpu_ion",
 		.size = SZ_16M,
+		.cacheable = 1,
 		},
 	},
 };
