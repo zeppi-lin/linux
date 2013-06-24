@@ -10,6 +10,7 @@
 #include <mach/common.h>
 #include <mach/devices-common.h>
 
+#include "edm.h"
 
 /****************************************************************************
  *                                                                          
@@ -97,17 +98,15 @@ static const struct i2c_board_info wandbase_sgtl5000_i2c_data __initdata = {
 
 static char wandbase_sgtl5000_dev_name[8] = "0-000a";
 
-extern struct mxc_audio_platform_data wand_audio_channel_data;
-
 static __init int wandbase_init_sgtl5000(void) {
 	int i2c_bus = 1; /* TODO: get this from the module. */
 
-        wandbase_sgtl5000_dev_name[0] = '0' + i2c_bus;
+	wandbase_sgtl5000_dev_name[0] = '0' + i2c_bus;
 	wandbase_sgtl5000_consumer_vdda.dev_name = wandbase_sgtl5000_dev_name;
 	wandbase_sgtl5000_consumer_vddio.dev_name = wandbase_sgtl5000_dev_name;
         
-        wandbase_audio_device.dev.platform_data = &wand_audio_channel_data;
-        platform_device_register(&wandbase_audio_device);
+	wandbase_audio_device.dev.platform_data = (struct mxc_audio_platform_data *)edm_analog_audio_platform_data;
+	platform_device_register(&wandbase_audio_device);
         
 	i2c_register_board_info(i2c_bus, &wandbase_sgtl5000_i2c_data, 1);
 	platform_device_register(&wandbase_sgtl5000_vdda_reg_devices);

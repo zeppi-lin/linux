@@ -42,6 +42,8 @@
 #include "usb.h"
 #include "board-wand.h"
 
+#include "edm.h"
+
 #define WAND_BT_ON		IMX_GPIO_NR(3, 13)
 #define WAND_BT_WAKE		IMX_GPIO_NR(3, 14)
 #define WAND_BT_HOST_WAKE	IMX_GPIO_NR(3, 15)
@@ -869,25 +871,16 @@ static __init void wand_init_pm(void) {
 /* ------------------------------------------------------------------------ */
 
 static __init void wand_init_external_gpios(void) {
+	int i;
+	char *name = "external_gpio_0";
 
 	wand_mux_pads_init_external_gpios();
 
-	gpio_request(IMX_GPIO_NR(3, 11), "external_gpio_0");
-	gpio_export(IMX_GPIO_NR(3, 11), true);
-	gpio_request(IMX_GPIO_NR(3, 27), "external_gpio_1");
-	gpio_export(IMX_GPIO_NR(3, 27), true);
-	gpio_request(IMX_GPIO_NR(6, 31), "external_gpio_2");
-	gpio_export(IMX_GPIO_NR(6, 31), true);
-	gpio_request(IMX_GPIO_NR(1, 24), "external_gpio_3");
-	gpio_export(IMX_GPIO_NR(1, 24), true);
-	gpio_request(IMX_GPIO_NR(7,  8), "external_gpio_4");
-	gpio_export(IMX_GPIO_NR(7,  8), true);
-	gpio_request(IMX_GPIO_NR(3, 26), "external_gpio_5");
-	gpio_export(IMX_GPIO_NR(3, 26), true);
-	gpio_request(IMX_GPIO_NR(3, 8), "external_gpio_6");
-	gpio_export(IMX_GPIO_NR(3, 8), true);
-	gpio_request(IMX_GPIO_NR(4, 5), "external_gpio_7");
-	gpio_export(IMX_GPIO_NR(4, 5), true);
+	for (i=0; i<EDM_N_EXTERNAL_GPIO; i++) {
+		name[14] = '0' + i;                
+		gpio_request(edm_external_gpio[i], name);
+		gpio_export(edm_external_gpio[i], true);
+	}
 }
 
 
@@ -1048,6 +1041,23 @@ static void __init fixup_wand_board(struct machine_desc *desc, struct tag *tags,
 			break;
 		}
 	}
+
+	/* Associate Wandboard Specific to EDM Structure*/
+	edm_external_gpio[0] = IMX_GPIO_NR(3, 11);        
+	edm_external_gpio[1] = IMX_GPIO_NR(3, 27);
+	edm_external_gpio[2] = IMX_GPIO_NR(6, 31);
+	edm_external_gpio[3] = IMX_GPIO_NR(1, 24);
+	edm_external_gpio[4] = IMX_GPIO_NR(7, 8);
+	edm_external_gpio[5] = IMX_GPIO_NR(3, 26);
+	edm_external_gpio[6] = IMX_GPIO_NR(3, 8);
+	edm_external_gpio[7] = IMX_GPIO_NR(4, 5);
+        
+	edm_i2c[0] = -EINVAL;
+	edm_i2c[1] = -EINVAL;
+	edm_i2c[2] = -EINVAL;
+	edm_ddc = -EINVAL;
+        
+	edm_analog_audio_platform_data = &wand_audio_channel_data;
 }
 
 #ifdef CONFIG_ANDROID_RAM_CONSOLE
