@@ -114,6 +114,38 @@ static __init int wandbase_init_sgtl5000(void) {
         return 0;
 }
 
+/****************************************************************************
+ *                                                                          
+ * PRISM Touch
+ *                                                                          
+ ****************************************************************************/
+
+#include <mach/gpio.h>
+#include <linux/delay.h>
+static struct i2c_board_info wandbase_prism_i2c_data[] = {
+        {
+		I2C_BOARD_INFO("prism", 0x10),
+		.irq	= -EINVAL,
+		.flags = I2C_CLIENT_WAKE,
+        },
+};
+
+static __init int wandbase_init_prism(void) {
+	unsigned prism_reset;
+	unsigned prism_irq;
+
+	prism_reset = edm_external_gpio[4];
+	prism_irq = edm_external_gpio[7];
+
+	gpio_direction_output(prism_reset, 0);
+	gpio_set_value(prism_reset, 0);
+	mdelay(50);
+	gpio_set_value(prism_reset, 1);
+	wandbase_prism_i2c_data[0].irq = gpio_to_irq(prism_irq);
+	gpio_direction_input(prism_irq);
+	i2c_register_board_info(1, &wandbase_prism_i2c_data[0], 1);
+	return 0;
+}
 
 /****************************************************************************
  *                                                                          
@@ -122,7 +154,10 @@ static __init int wandbase_init_sgtl5000(void) {
  ****************************************************************************/
 
 static __init int wandbase_init(void) {
-	return wandbase_init_sgtl5000();
+	int ret = 0;
+	ret += wandbase_init_sgtl5000();
+	ret += wandbase_init_prism();
+	return ret;
 }
 subsys_initcall(wandbase_init);
 
