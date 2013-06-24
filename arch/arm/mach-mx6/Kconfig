@@ -284,6 +284,8 @@ config MACH_WANDBOARD
         select IMX_HAVE_PLATFORM_IMX2_WDT
         select IMX_HAVE_PLATFORM_IMX_SNVS_RTC
         select IMX_HAVE_PLATFORM_AHCI
+        select IMX_HAVE_PLATFORM_IMX_PCIE
+        select IMX_HAVE_PLATFORM_PERFMON
 	help
 	  Include support for the WandBoard SoM.
 
