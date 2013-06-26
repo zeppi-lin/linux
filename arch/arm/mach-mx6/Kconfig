@@ -299,6 +299,20 @@ config WANDBOARD_BASE
 
           If you have a standard Wandboard, say Y.
 
+config WIZARDBOARD
+	tristate "Support for Wizard baseboard"
+	depends on EDM
+	default n
+	help
+	  Include support for the devices on the Wizard development board.
+
+config FAIRYBOARD
+	tristate "Support for Fairy baseboard"
+	depends on EDM
+	default n
+	help
+	  Include support for the Fairy carrier board.
+
 config MACH_MX6Q_HDMIDONGLE
 	bool "Support i.MX 6Quad HDMIDONGLE platform"
 	select ARCH_MX6Q

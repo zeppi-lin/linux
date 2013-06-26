@@ -23,5 +23,7 @@ obj-$(CONFIG_USB_EHCI_ARC_H1) += usb_h1.o
 obj-$(CONFIG_MACH_WANDBOARD) += board-wand.o board-wand-mux.o
 obj-$(CONFIG_EDM) += edm.o
 obj-$(CONFIG_WANDBOARD_BASE) += baseboard-wand.o
+obj-$(CONFIG_WIZARDBOARD) += baseboard-wizard.o
+obj-$(CONFIG_FAIRYBOARD) += baseboard-fairy.o
 obj-$(CONFIG_MACH_IMX_BLUETOOTH_RFKILL) += mx6_bt_rfkill.o
 obj-$(CONFIG_PCI_MSI) += msi.o
