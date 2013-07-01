@@ -148,6 +148,65 @@ static __init int wandbase_init_prism(void) {
 }
 
 /****************************************************************************
+ *
+ * GPIO_BUTTON
+ *
+ ****************************************************************************/
+#if defined(CONFIG_KEYBOARD_GPIO) || defined(CONFIG_KEYBOARD_GPIO_MODULE)
+static struct gpio_keys_button wandbase_gpio_buttons[] = {
+        {
+                .code                   = KEY_POWER,
+                .desc                   = "btn power-key",
+                .wakeup                 = 1,
+                .active_low             = 0,
+        }, {
+                .code                   = KEY_F8,
+                .desc                   = "btn home-key",
+                .wakeup                 = 0,
+                .active_low             = 0,
+        }, {
+                .code                   = KEY_ESC,
+                .desc                   = "btn back-key",
+                .wakeup                 = 0,
+                .active_low             = 0,
+        }, {
+                .code                   = KEY_F1,
+                .desc                   = "btn menu-key",
+                .wakeup                 = 0,
+                .active_low             = 0,
+        },
+};
+
+static struct gpio_keys_platform_data wandbase_gpio_key_info = {
+        .buttons        = wandbase_gpio_buttons,
+        .nbuttons       = ARRAY_SIZE(wandbase_gpio_buttons),
+};
+
+static struct platform_device wandbase_keys_gpio = {
+        .name   = "gpio-keys",
+        .id     = -1,
+        .dev    = {
+                .platform_data  = &wandbase_gpio_key_info,
+        },
+};
+
+static int __init wandbase_gpio_keys_init(void)
+{
+	gpio_free(edm_external_gpio[1]);
+	gpio_free(edm_external_gpio[5]);
+	gpio_free(edm_external_gpio[2]);
+	gpio_free(edm_external_gpio[3]);
+	wandbase_gpio_buttons[0].gpio = edm_external_gpio[1];
+	wandbase_gpio_buttons[1].gpio = edm_external_gpio[5];
+	wandbase_gpio_buttons[2].gpio = edm_external_gpio[2];
+	wandbase_gpio_buttons[3].gpio = edm_external_gpio[3];
+	platform_device_register(&wandbase_keys_gpio);
+	return 0;
+}
+#else
+static inline int __init wandbase_gpio_keys_init(void) { return 0; }
+#endif
+/****************************************************************************
  *                                                                          
  * main-function for wand baseboard
  *                                                                          
@@ -157,6 +216,7 @@ static __init int wandbase_init(void) {
 	int ret = 0;
 	ret += wandbase_init_sgtl5000();
 	ret += wandbase_init_prism();
+	ret += wandbase_gpio_keys_init();
 	return ret;
 }
 subsys_initcall(wandbase_init);
