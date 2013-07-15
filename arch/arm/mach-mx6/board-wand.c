@@ -110,13 +110,13 @@ static int wand_sd_speed_change(unsigned int sd, int clock) {
 /* ------------------------------------------------------------------------ */
 
 #define WAND_SD1_CD		IMX_GPIO_NR(1, 2)
+#define WAND_SD1_WP		IMX_GPIO_NR(4, 15)
 #define WAND_SD3_CD		IMX_GPIO_NR(3, 9)
-#define WAND_SD3_WP		IMX_GPIO_NR(1, 10)
 
 static const struct esdhc_platform_data wand_sd_data[3] = {
 	{
 		.cd_gpio		= WAND_SD1_CD,
-		.wp_gpio		=-EINVAL,
+		.wp_gpio		= -EINVAL,
 		.keep_power_at_suspend	= 1,
 	        .support_8bit		= 0,
 		.platform_pad_change	= wand_sd_speed_change,
@@ -130,7 +130,7 @@ static const struct esdhc_platform_data wand_sd_data[3] = {
                 .cd_type                = ESDHC_CD_PERMANENT,
 	}, {
 		.cd_gpio		= WAND_SD3_CD,
-		.wp_gpio		= WAND_SD3_WP,
+		.wp_gpio		= -EINVAL,
 		.keep_power_at_suspend	= 1,
 		.support_8bit		= 0,
 		.delay_line		= 0,
@@ -146,6 +146,7 @@ static void wand_init_sd(void) {
 	/* Card Detect for SD1 & SD3, respectively */
 	EDM_SET_PAD(PAD_GPIO_2__GPIO_1_2); 
 	EDM_SET_PAD(PAD_EIM_DA9__GPIO_3_9);
+	EDM_SET_PAD(PAD_KEY_ROW4__GPIO_4_15);
 
 	/* Add mmc devices in reverse order, so mmc0 always is boot sd (SD3) */
 	for (i=2; i>=0; i--) {
