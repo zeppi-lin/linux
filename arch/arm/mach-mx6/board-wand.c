@@ -319,40 +319,46 @@ void __init wand_init_audio(void) {
 static int wand_fec_phy_init(struct phy_device *phydev) {
 	unsigned short val;
 
-	/* Enable AR8031 125MHz clk */
-	phy_write(phydev, 0x0d, 0x0007); /* Set device address to 7*/
-	phy_write(phydev, 0x00, 0x8000); /* Apply by soft reset */
-	udelay(500); 
-        
-	phy_write(phydev, 0x0e, 0x8016); /* set mmd reg */
-	phy_write(phydev, 0x0d, 0x4007); /* apply */
-
+	/* Ar8031 phy SmartEEE feature cause link status generates glitch,
+	 * which cause ethernet link down/up issue, so disable SmartEEE
+	 */
+	phy_write(phydev, 0xd, 0x3);
+	phy_write(phydev, 0xe, 0x805d);
+	phy_write(phydev, 0xd, 0x4003);
 	val = phy_read(phydev, 0xe);
+	val &= ~(0x1 << 8);
+	phy_write(phydev, 0xe, val);
+
+	/* To enable AR8031 ouput a 125MHz clk from CLK_25M */
+	phy_write(phydev, 0xd, 0x7);
+	phy_write(phydev, 0xe, 0x8016);
+	phy_write(phydev, 0xd, 0x4007);
+	val = phy_read(phydev, 0xe);
+
 	val &= 0xffe3;
 	val |= 0x18;
 	phy_write(phydev, 0xe, val);
-	phy_write(phydev, 0x0d, 0x4007); /* Post data */        
 
-	/* Introduce random tx clock delay. Why is this needed? */
+	/* Introduce tx clock delay */
 	phy_write(phydev, 0x1d, 0x5);
 	val = phy_read(phydev, 0x1e);
 	val |= 0x0100;
 	phy_write(phydev, 0x1e, val);
+
+	/*check phy power*/
+	val = phy_read(phydev, 0x0);
+
+	if (val & BMCR_PDOWN)
+		phy_write(phydev, 0x0, (val & ~BMCR_PDOWN));
 
 	return 0;
 }
 
 /* ------------------------------------------------------------------------ */
 
-static int wand_fec_power_hibernate(struct phy_device *phydev) { return 0; }
-
-/* ------------------------------------------------------------------------ */
-
 static struct fec_platform_data wand_fec_data = {
 	.init			= wand_fec_phy_init,
-	.power_hibernate	= wand_fec_power_hibernate,
 	.phy			= PHY_INTERFACE_MODE_RGMII,
-//	.phy_noscan_mask	= ~2, /* phy is on adress 1 */
 };
 
 /* ------------------------------------------------------------------------ */
