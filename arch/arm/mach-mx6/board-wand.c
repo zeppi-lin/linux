@@ -183,17 +183,24 @@ static void __init wand_init_i2c(void) {
 
 /****************************************************************************
  *                                                                          
- * Initialize debug console (UART1)
+ * Initialize UARTs
  *                                                                          
  ****************************************************************************/
 
+static const struct imxuart_platform_data wand_external_uart_data = {
+	.flags = IMXUART_HAVE_RTSCTS,
+	.dma_req_tx = MX6Q_DMA_REQ_UART2_TX,
+	.dma_req_rx = MX6Q_DMA_REQ_UART2_RX,
+};
+
 /* ------------------------------------------------------------------------ */
- 
+
 static __init void wand_init_uart(void) {
 
 	wand_mux_pads_init_uart();
 
 	imx6q_add_imx_uart(0, NULL);
+	imx6q_add_imx_uart(1, &wand_external_uart_data);
 }
 
 
