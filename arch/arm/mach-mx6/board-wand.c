@@ -589,6 +589,27 @@ static void wand_init_display(void) {
 	wand_init_display_lcdif();
 }
 
+/****************************************************************************
+ *                                                                          
+ * LCD Backlight Control
+ *                                                                          
+ ****************************************************************************/
+#include <linux/pwm_backlight.h>
+
+static struct platform_pwm_backlight_data wand_pwm_backlight_data = {
+	.pwm_id = 2,
+	.max_brightness = 248,
+	.dft_brightness = 248,
+	.pwm_period_ns = 50000,
+};
+
+static void wand_init_lcd_backlight(void)
+{
+	EDM_SET_PAD( PAD_SD4_DAT1__PWM3_PWMO );
+	imx6q_add_mxc_pwm(2);
+	imx6q_add_mxc_pwm_backlight(2, &wand_pwm_backlight_data);
+}
+
 /* ------------------------------------------------------------------------ */
 
 /*****************************************************************************
@@ -1213,6 +1234,7 @@ static void __init wand_board_init(void) {
 	wand_init_usb();
 	wand_init_ipu();
 	wand_init_display();
+	wand_init_lcd_backlight();
 	wand_init_ion();
 
 	wand_init_wdt();
