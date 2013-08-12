@@ -99,16 +99,15 @@ static const struct i2c_board_info wandbase_sgtl5000_i2c_data __initdata = {
 static char wandbase_sgtl5000_dev_name[8] = "0-000a";
 
 static __init int wandbase_init_sgtl5000(void) {
-	int i2c_bus = 1; /* TODO: get this from the module. */
 
-	wandbase_sgtl5000_dev_name[0] = '0' + i2c_bus;
+	wandbase_sgtl5000_dev_name[0] = '0' + edm_i2c[1];
 	wandbase_sgtl5000_consumer_vdda.dev_name = wandbase_sgtl5000_dev_name;
 	wandbase_sgtl5000_consumer_vddio.dev_name = wandbase_sgtl5000_dev_name;
         
 	wandbase_audio_device.dev.platform_data = (struct mxc_audio_platform_data *)edm_analog_audio_platform_data;
 	platform_device_register(&wandbase_audio_device);
         
-	i2c_register_board_info(i2c_bus, &wandbase_sgtl5000_i2c_data, 1);
+	i2c_register_board_info(edm_i2c[1], &wandbase_sgtl5000_i2c_data, 1);
 	platform_device_register(&wandbase_sgtl5000_vdda_reg_devices);
 	platform_device_register(&wandbase_sgtl5000_vddio_reg_devices);
         return 0;
@@ -143,7 +142,7 @@ static __init int wandbase_init_prism(void) {
 	gpio_set_value(prism_reset, 1);
 	wandbase_prism_i2c_data[0].irq = gpio_to_irq(prism_irq);
 	gpio_direction_input(prism_irq);
-	i2c_register_board_info(1, &wandbase_prism_i2c_data[0], 1);
+	i2c_register_board_info(edm_i2c[1], &wandbase_prism_i2c_data[0], 1);
 	return 0;
 }
 
@@ -192,14 +191,14 @@ static struct platform_device wandbase_keys_gpio = {
 
 static int __init wandbase_gpio_keys_init(void)
 {
-	gpio_free(edm_external_gpio[1]);
+	gpio_free(edm_external_gpio[4]);
 	gpio_free(edm_external_gpio[5]);
-	gpio_free(edm_external_gpio[2]);
-	gpio_free(edm_external_gpio[3]);
-	wandbase_gpio_buttons[0].gpio = edm_external_gpio[1];
+	gpio_free(edm_external_gpio[6]);
+	gpio_free(edm_external_gpio[7]);
+	wandbase_gpio_buttons[0].gpio = edm_external_gpio[4];
 	wandbase_gpio_buttons[1].gpio = edm_external_gpio[5];
-	wandbase_gpio_buttons[2].gpio = edm_external_gpio[2];
-	wandbase_gpio_buttons[3].gpio = edm_external_gpio[3];
+	wandbase_gpio_buttons[2].gpio = edm_external_gpio[6];
+	wandbase_gpio_buttons[3].gpio = edm_external_gpio[7];
 	platform_device_register(&wandbase_keys_gpio);
 	return 0;
 }
