@@ -4,7 +4,7 @@
 
 /* variables defined in edm.c and set in boardfile */
 
-#define EDM_N_EXTERNAL_GPIO 8
+#define EDM_N_EXTERNAL_GPIO 10
 
 extern int edm_external_gpio[EDM_N_EXTERNAL_GPIO];
 extern int edm_i2c[3];

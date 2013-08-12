@@ -1107,19 +1107,12 @@ static void __init fixup_wand_board(struct machine_desc *desc, struct tag *tags,
 	}
 
 	/* Associate Wandboard Specific to EDM Structure*/
-	edm_external_gpio[0] = IMX_GPIO_NR(3, 11);        
-	edm_external_gpio[1] = IMX_GPIO_NR(3, 27);
-	edm_external_gpio[2] = IMX_GPIO_NR(6, 31);
-	edm_external_gpio[3] = IMX_GPIO_NR(1, 24);
-	edm_external_gpio[4] = IMX_GPIO_NR(7, 8);
-	edm_external_gpio[5] = IMX_GPIO_NR(3, 26);
-	edm_external_gpio[6] = IMX_GPIO_NR(3, 8);
-	edm_external_gpio[7] = IMX_GPIO_NR(4, 5);
+	wand_external_gpios_to_edm_gpios();
         
-	edm_i2c[0] = -EINVAL;
-	edm_i2c[1] = -EINVAL;
-	edm_i2c[2] = -EINVAL;
-	edm_ddc = -EINVAL;
+	edm_i2c[0] = 0;
+	edm_i2c[1] = 1;
+	edm_i2c[2] = 2;
+	edm_ddc = 0;
         
 	edm_analog_audio_platform_data = &wand_audio_channel_data;
 }
@@ -1157,6 +1150,9 @@ static void __init wand_reserve(void)
 	fb_array_size = ARRAY_SIZE(wand_fb_pdata);
 	if (fb_array_size > 0 && wand_fb_pdata[0].res_base[0] &&
 	    wand_fb_pdata[0].res_size[0]) {
+		if (wand_fb_pdata[0].res_base[0] > SZ_2G)
+			printk(KERN_INFO"UI Performance downgrade with FB phys address %x!\n",
+			    wand_fb_pdata[0].res_base[0]);
 		memblock_reserve(wand_fb_pdata[0].res_base[0],
 				 wand_fb_pdata[0].res_size[0]);
 		memblock_remove(wand_fb_pdata[0].res_base[0],
@@ -1168,8 +1164,8 @@ static void __init wand_reserve(void)
 	for (i = fb0_reserved; i < fb_array_size; i++)
 		if (wand_fb_pdata[i].res_size[0]) {
 			/* Reserve for other background buffer. */
-			phys = memblock_alloc(wand_fb_pdata[i].res_size[0],
-						SZ_4K);
+			phys = memblock_alloc_base(wand_fb_pdata[i].res_size[0],
+						SZ_4K, SZ_2G);
 			memblock_remove(phys, wand_fb_pdata[i].res_size[0]);
 			wand_fb_pdata[i].res_base[0] = phys;
 		}
@@ -1186,8 +1182,8 @@ static void __init wand_reserve(void)
 #if defined(CONFIG_MXC_GPU_VIV) || defined(CONFIG_MXC_GPU_VIV_MODULE)
 	if (wand_gpu_pdata.reserved_mem_size) {
 		printk("EDWARD : GPU_Reserved Memory equals to %d\n",wand_gpu_pdata.reserved_mem_size);
-		phys = memblock_alloc_base(wand_gpu_pdata.reserved_mem_size,
-					   SZ_4K, SZ_512M);
+			phys = memblock_alloc_base(wand_gpu_pdata.reserved_mem_size,
+						   SZ_4K, SZ_2G);
 		printk("EDWARD :  gpumem init at phys 0x%x\n",phys);
 		memblock_remove(phys, wand_gpu_pdata.reserved_mem_size);
 		wand_gpu_pdata.reserved_mem_base = phys;

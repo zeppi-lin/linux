@@ -31,16 +31,17 @@
         else \
                 mxc_iomux_v3_setup_pad(MX6DL_##p)
 
-extern void wand_mux_pads_init_spi(void);
-extern void wand_mux_pads_init_external_gpios(void);
-extern void wand_mux_pads_init_bluetooth(void);
-extern void wand_mux_pads_init_wifi(void);
-extern void wand_mux_pads_init_usb(void);
-extern void wand_mux_pads_init_ethernet(void);
-extern void wand_mux_pads_init_audio(void);
-extern void wand_mux_pads_init_uart(void);
-extern void wand_mux_pads_init_i2c(int port);
 extern void wand_mux_pads_init_sdmmc(unsigned int port, int speed);
+extern void wand_mux_pads_init_i2c(int port);
+extern void wand_mux_pads_init_uart(void);
+extern void wand_mux_pads_init_audio(void);
+extern void wand_mux_pads_init_ethernet(void);
+extern void wand_mux_pads_init_usb(void);
+extern void wand_mux_pads_init_wifi(void);
+extern void wand_mux_pads_init_bluetooth(void);
+extern void wand_mux_pads_init_external_gpios(void);
+extern void wand_external_gpios_to_edm_gpios(void);
+extern void wand_mux_pads_init_spi(void);
 extern void wand_mux_pads_init_lcdif(void);
 extern void wand_mux_pads_init_lvds(void);
 

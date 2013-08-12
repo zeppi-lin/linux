@@ -4,15 +4,17 @@
 
 #include "edm.h"
 
-int edm_external_gpio[((EDM_N_EXTERNAL_GPIO) < 8 ? 8 : (EDM_N_EXTERNAL_GPIO))] = {
-        [0] = -EINVAL,
-        [1] = -EINVAL,
-        [2] = -EINVAL,
-        [3] = -EINVAL,
-        [4] = -EINVAL,
-        [5] = -EINVAL,
-        [6] = -EINVAL,
-        [7] = -EINVAL,
+int edm_external_gpio[EDM_N_EXTERNAL_GPIO] = {
+	[0] = -EINVAL,
+	[1] = -EINVAL,
+	[2] = -EINVAL,
+	[3] = -EINVAL,
+	[4] = -EINVAL,
+	[5] = -EINVAL,
+	[6] = -EINVAL,
+	[7] = -EINVAL,
+	[8] = -EINVAL,
+	[9] = -EINVAL,
 };
 EXPORT_SYMBOL_GPL(edm_external_gpio);
 

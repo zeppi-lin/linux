@@ -18,6 +18,7 @@
 */
 
 #include "board-wand.h"
+#include "edm.h"
 
 /****************************************************************************
  *                                                                          
@@ -128,10 +129,16 @@ void wand_mux_pads_init_i2c(int port)
 void wand_mux_pads_init_uart(void)
 {
 	/* UART1 (debug console) */
-        EDM_SET_PAD(PAD_CSI0_DAT10__UART1_TXD);
-        EDM_SET_PAD(PAD_CSI0_DAT11__UART1_RXD);
-        EDM_SET_PAD(PAD_EIM_D19__UART1_CTS);
-        EDM_SET_PAD(PAD_EIM_D20__UART1_RTS);
+	EDM_SET_PAD(PAD_CSI0_DAT10__UART1_TXD);
+	EDM_SET_PAD(PAD_CSI0_DAT11__UART1_RXD);
+	EDM_SET_PAD(PAD_EIM_D19__UART1_CTS);
+	EDM_SET_PAD(PAD_EIM_D20__UART1_RTS);
+
+	/* UART 2 */
+	EDM_SET_PAD( PAD_SD4_DAT4__UART2_RXD );
+	EDM_SET_PAD( PAD_SD4_DAT5__UART2_RTS );
+	EDM_SET_PAD( PAD_SD4_DAT6__UART2_CTS );
+	EDM_SET_PAD( PAD_SD4_DAT7__UART2_TXD );
 }
 	
 
@@ -243,16 +250,32 @@ void wand_mux_pads_init_bluetooth(void)
  ****************************************************************************/
 void wand_mux_pads_init_external_gpios(void)
 {
-	EDM_SET_PAD(PAD_EIM_DA11__GPIO_3_11);
-	EDM_SET_PAD(PAD_EIM_D27__GPIO_3_27);
-	EDM_SET_PAD(PAD_EIM_BCLK__GPIO_6_31);
-	EDM_SET_PAD(PAD_ENET_RX_ER__GPIO_1_24);
-	EDM_SET_PAD(PAD_SD3_RST__GPIO_7_8);
-	EDM_SET_PAD(PAD_EIM_D26__GPIO_3_26);
-	EDM_SET_PAD(PAD_EIM_DA8__GPIO_3_8);
-	EDM_SET_PAD(PAD_GPIO_19__GPIO_4_5);
+	EDM_SET_PAD(PAD_EIM_DA12__GPIO_3_12); /* P255 */ /*EIM_DA12*/
+	EDM_SET_PAD(PAD_EIM_DA11__GPIO_3_11); /* P256 */ /*EIM_DA11*/
+	EDM_SET_PAD(PAD_EIM_DA10__GPIO_3_10); /* P257 */ /*EIM_DA10*/
+	EDM_SET_PAD(PAD_EIM_D27__GPIO_3_27); /* P258 */ /*EIM_D27*/
+	EDM_SET_PAD(PAD_EIM_D26__GPIO_3_26); /* P259 */ /*EIM_D26*/
+	EDM_SET_PAD(PAD_EIM_BCLK__GPIO_6_31); /* P260 */ /*EIM_BCLK*/
+	EDM_SET_PAD(PAD_EIM_DA8__GPIO_3_8); /* P261 */ /*EIM_DA8*/
+	EDM_SET_PAD(PAD_ENET_RX_ER__GPIO_1_24); /* P262 */ /*ENET_RX_ER*/
+	EDM_SET_PAD(PAD_GPIO_19__GPIO_4_5);  /* P263 */ /*GPIO_19*/
+	EDM_SET_PAD(PAD_SD3_RST__GPIO_7_8);  /* P264 */ /*SD3_RST*/
 }
 
+void wand_external_gpios_to_edm_gpios(void)
+{
+	/* Associate EDM-CF-IMX6 Specific to EDM Structure*/
+	edm_external_gpio[0] = IMX_GPIO_NR(3, 12); /* P255 */ /*EIM_DA12*/
+	edm_external_gpio[1] = IMX_GPIO_NR(3, 11); /* P256 */ /*EIM_DA11*/
+	edm_external_gpio[2] = IMX_GPIO_NR(3, 10); /* P257 */ /*EIM_DA10*/
+	edm_external_gpio[3] = IMX_GPIO_NR(3, 27); /* P258 */ /*EIM_D27*/
+	edm_external_gpio[4] = IMX_GPIO_NR(3, 26); /* P259 */ /*EIM_D26*/
+	edm_external_gpio[5] = IMX_GPIO_NR(6, 31); /* P260 */ /*EIM_BCLK*/
+	edm_external_gpio[6] = IMX_GPIO_NR(3, 8);  /* P261 */ /*EIM_DA8*/
+	edm_external_gpio[7] = IMX_GPIO_NR(1, 24); /* P262 */ /*ENET_RX_ER*/
+	edm_external_gpio[8] = IMX_GPIO_NR(4, 5);  /* P263 */ /*GPIO_19*/
+	edm_external_gpio[9] = IMX_GPIO_NR(7, 8);  /* P264 */ /*SD3_RST*/
+}
 
 /****************************************************************************
  *                                                                          
