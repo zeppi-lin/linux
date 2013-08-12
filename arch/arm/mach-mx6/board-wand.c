@@ -936,7 +936,7 @@ static const int wand_spi1_chipselect[] = { IMX_GPIO_NR(2, 30) };
 
 /* platform device */
 static const struct spi_imx_master wand_spi1_data = {
-	.chipselect     = wand_spi1_chipselect,
+	.chipselect     = (int *)wand_spi1_chipselect,
 	.num_chipselect = ARRAY_SIZE(wand_spi1_chipselect),
 };
 
@@ -945,7 +945,7 @@ static const struct spi_imx_master wand_spi1_data = {
 static const int wand_spi2_chipselect[] = { IMX_GPIO_NR(2, 26), IMX_GPIO_NR(2, 27) };
 
 static const struct spi_imx_master wand_spi2_data = {
-	.chipselect     = wand_spi2_chipselect,
+	.chipselect     = (int *)wand_spi2_chipselect,
 	.num_chipselect = ARRAY_SIZE(wand_spi2_chipselect),
 };
 
@@ -1030,6 +1030,13 @@ static void wand_init_ion(void)
 #else
 static inline void wand_init_ion(void) {;}
 #endif
+
+static void wand_init_wdt(void)
+{
+#if defined(CONFIG_IMX_HAVE_PLATFORM_IMX2_WDT) && defined(CONFIG_IMX2_WDT)
+	imx6q_add_imx2_wdt(0, NULL);
+#endif
+}
 
 static void __init fixup_wand_board(struct machine_desc *desc, struct tag *tags,
 				   char **cmdline, struct meminfo *mi)
@@ -1147,22 +1154,12 @@ static void __init wand_reserve(void)
 		}
 
 #ifdef CONFIG_ANDROID_RAM_CONSOLE
-#if 1
 	phys = memblock_alloc_base(SZ_1M, SZ_4K, SZ_1G);
 	printk("EDWARD :  ram console init at phys 0x%x\n",phys);
 	memblock_remove(phys, SZ_1M);
 	memblock_free(phys, SZ_1M);
 	ram_console_resource.start = phys;
 	ram_console_resource.end   = phys + SZ_1M - 1;
-#else
-//	phys = memblock_alloc_base(SZ_128K, SZ_4K, SZ_1G);
-	phys = memblock_alloc_base(SZ_1M, SZ_4K, SZ_1G);
-	printk("EDWARD :  ram console init at phys 0x%x\n",phys);
-	memblock_remove(phys, SZ_128K);
-	memblock_free(phys, SZ_128K);
-	ram_console_resource.start = phys;
-	ram_console_resource.end   = phys + SZ_128K - 1;
-#endif
 #endif
 
 #if defined(CONFIG_MXC_GPU_VIV) || defined(CONFIG_MXC_GPU_VIV_MODULE)
@@ -1218,10 +1215,7 @@ static void __init wand_board_init(void) {
 	wand_init_display();
 	wand_init_ion();
 
-#if defined(CONFIG_IMX_HAVE_PLATFORM_IMX2_WDT) && defined(CONFIG_IMX2_WDT)
-	imx6q_add_imx2_wdt(0, NULL);
-#endif
-
+	wand_init_wdt();
 	wand_init_ahci();
 
 	wand_init_wifi();
