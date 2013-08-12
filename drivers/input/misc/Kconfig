@@ -504,6 +504,16 @@ config INPUT_DA9052_ONKEY
 	  To compile this driver as a module, choose M here: the module
 	  will be called da9052_onkey.
 
+config INPUT_ISL29023_POLL
+        tristate "Intersil ISL29023 ambient light sensor - Polling Mode"
+        depends on I2C && SYSFS
+        help
+          Simplified version for the Intersil ISL29023 ambient light sensor.
+	  This driver eliminate the needs for interrupt signal.
+
+          This driver can also be built as a module.  If so, the module
+          will be called isl29023_poll.
+
 config INPUT_ISL29023
 	tristate "Intersil ISL29023 ambient light sensor"
 	depends on I2C && SYSFS
