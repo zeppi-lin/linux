@@ -584,6 +584,28 @@ static void wand_init_display(void) {
 
 /* ------------------------------------------------------------------------ */
 
+/*****************************************************************************
+ *                                                                            
+ * PCI Express (not present on default baseboard, but is routed to connector)
+ *                                                                            
+ *****************************************************************************/
+
+#define WAND_PCIE_NRST		IMX_GPIO_NR(3, 31)
+
+static const struct imx_pcie_platform_data wand_pcie_data = {
+	.pcie_pwr_en	= -EINVAL,
+	.pcie_rst	= WAND_PCIE_NRST,
+	.pcie_wake_up	= -EINVAL,
+	.pcie_dis	= -EINVAL,
+};
+
+/* ------------------------------------------------------------------------ */
+
+static void __init wand_init_pcie(void) {
+	EDM_SET_PAD( PAD_EIM_D31__GPIO_3_31);
+	imx6q_add_pcie(&wand_pcie_data);
+}
+
 /****************************************************************************
  *                                                                          
  * AHCI - SATA
@@ -1201,6 +1223,7 @@ static void __init wand_board_init(void) {
 	wand_init_external_gpios();
 	wand_init_spi();
 	wand_init_gpu();
+	wand_init_pcie();
 }
 
 
