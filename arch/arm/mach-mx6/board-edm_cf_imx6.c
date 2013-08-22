@@ -943,13 +943,26 @@ static __init void edm_cf_imx6_init_pm(void) {
 static __init void edm_cf_imx6_init_external_gpios(void) {
 	int i;
 	char *name = "external_gpio_0";
+	struct device *gpio_dev;
+	struct class *gpio_class;
+	const char *edm_gpio_symlink_name[] = {
+	"pin255", "pin256", "pin257", "pin258", "pin259", 
+	"pin260", "pin261", "pin262", "pin263", "pin264"	
+	};
 
 	edm_cf_imx6_mux_pads_init_external_gpios();
 
+	gpio_class = class_create(THIS_MODULE, "gpio_user");
+	  if (IS_ERR(gpio_class)) {
+          pr_err("Failed to create class(gpio_user)!\n");
+          return;
+   	}	
+	gpio_dev = device_create(gpio_class, NULL, 0, NULL, "gpio_ports");
 	for (i=0; i<EDM_N_EXTERNAL_GPIO; i++) {
-		name[14] = '0' + i;                
+		name[14] = '0' + i;		
 		gpio_request(edm_external_gpio[i], name);
-		gpio_export(edm_external_gpio[i], true);
+		gpio_export(edm_external_gpio[i], true);		
+		gpio_export_link(gpio_dev, edm_gpio_symlink_name[i], edm_external_gpio[i]);
 		printk("EDWARD: %s%c is gpio%u\n",name, ('0'+i), edm_external_gpio[i]);
 	}
 }
