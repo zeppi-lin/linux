@@ -28,6 +28,9 @@ config	SOC_IMX6Q
 config	SOC_IMX6SL
 	bool
 
+config  EDM
+	bool
+
 config MACH_MX6Q_ARM2
 	bool "Support i.MX 6Quad Armadillo2 platform"
 	select ARCH_MX6Q
@@ -307,6 +310,7 @@ config MACH_WANDBOARD
 	select IMX_HAVE_PLATFORM_IMX_PCIE if IMX_PCIE
 	select ZONE_DMA if ION=n
         select IMX_HAVE_PLATFORM_AHCI if SATA_AHCI_PLATFORM
+	select EDM
 	help
 	  Include support for the WandBoard SoM.
 
@@ -318,6 +322,13 @@ config WANDBOARD_BASE
 	  Include support for the devices on the default wand baseboard.
 
           If you have a standard Wandboard, say Y.
+
+config EXPANSION_FWBADAPT
+	tristate "Support for FWB Adapter expansion board"
+	depends on WANDBOARD_BASE
+	default n
+	help
+	  Include support for Future WandBoard Adapter (TN55) for Prism touchscreen
 
 comment "MX6 Options:"
 
