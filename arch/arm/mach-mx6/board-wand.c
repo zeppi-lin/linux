@@ -41,6 +41,7 @@
 
 #include "crm_regs.h"
 #include "devices-imx6q.h"
+#include "edm.h"
 #include "usb.h"
 
 #define WAND_BT_ON		IMX_GPIO_NR(3, 13)
@@ -1216,6 +1217,22 @@ static void __init wand_reserve(void)
 		memblock_remove(phys, wand_gpu_pdata.reserved_mem_size);
 		wand_gpu_pdata.reserved_mem_base = phys;
 	}
+
+	edm_external_gpio[0] = IMX_GPIO_NR(3, 11);        
+	edm_external_gpio[1] = IMX_GPIO_NR(3, 27);
+	edm_external_gpio[2] = IMX_GPIO_NR(6, 31);
+	edm_external_gpio[3] = IMX_GPIO_NR(1, 24);
+	edm_external_gpio[4] = IMX_GPIO_NR(7, 8);
+	edm_external_gpio[5] = IMX_GPIO_NR(3, 26);
+	edm_external_gpio[6] = IMX_GPIO_NR(3, 8);
+	edm_external_gpio[7] = IMX_GPIO_NR(4, 5);
+        
+	edm_i2c[0] = -EINVAL;
+	edm_i2c[1] = -EINVAL;
+	edm_i2c[2] = -EINVAL;
+	edm_ddc = -EINVAL;
+        
+	edm_analog_audio_platform_data = &wand_audio_channel_data;
 }
 
 /*****************************************************************************
