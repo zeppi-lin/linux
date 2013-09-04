@@ -133,8 +133,8 @@ static __init int wandbase_init_prism(void) {
 	unsigned prism_reset;
 	unsigned prism_irq;
 
-	prism_reset = edm_external_gpio[4];
-	prism_irq = edm_external_gpio[7];
+	prism_reset = edm_external_gpio[9];
+	prism_irq = edm_external_gpio[8];
 
 	gpio_direction_output(prism_reset, 0);
 	gpio_set_value(prism_reset, 0);
@@ -191,13 +191,13 @@ static struct platform_device wandbase_keys_gpio = {
 
 static int __init wandbase_gpio_keys_init(void)
 {
+	gpio_free(edm_external_gpio[3]);
 	gpio_free(edm_external_gpio[4]);
 	gpio_free(edm_external_gpio[5]);
-	gpio_free(edm_external_gpio[6]);
 	gpio_free(edm_external_gpio[7]);
-	wandbase_gpio_buttons[0].gpio = edm_external_gpio[4];
-	wandbase_gpio_buttons[1].gpio = edm_external_gpio[5];
-	wandbase_gpio_buttons[2].gpio = edm_external_gpio[6];
+	wandbase_gpio_buttons[0].gpio = edm_external_gpio[3];
+	wandbase_gpio_buttons[1].gpio = edm_external_gpio[4];
+	wandbase_gpio_buttons[2].gpio = edm_external_gpio[5];
 	wandbase_gpio_buttons[3].gpio = edm_external_gpio[7];
 	platform_device_register(&wandbase_keys_gpio);
 	return 0;
