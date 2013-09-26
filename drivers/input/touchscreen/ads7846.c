@@ -858,7 +858,7 @@ static void ads7846_report_state(struct ads7846 *ts)
 		}
 
        	ix = x; iy = y;
-//       	input_dev_calibrate(input, &ix, &iy);
+		input_dev_calibrate(input, &ix, &iy, pdata->x_max , pdata->y_max );
 		input_report_abs(input, ABS_X, ix);
 		input_report_abs(input, ABS_Y, iy);
 		input_report_abs(input, ABS_PRESSURE, ts->pressure_max - Rt);
