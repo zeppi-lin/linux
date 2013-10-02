@@ -961,14 +961,14 @@ static __init void wand_init_pm(void)
 
 static __init void wand_init_external_gpios(void)
 {
-	IMX6_SETUP_PAD(EIM_DA11__GPIO_3_11);
-	IMX6_SETUP_PAD(EIM_D27__GPIO_3_27);
-	IMX6_SETUP_PAD(EIM_BCLK__GPIO_6_31);
-	IMX6_SETUP_PAD(ENET_RX_ER__GPIO_1_24);
-	IMX6_SETUP_PAD(SD3_RST__GPIO_7_8);
-	IMX6_SETUP_PAD(EIM_D26__GPIO_3_26);
-	IMX6_SETUP_PAD(EIM_DA8__GPIO_3_8);
-	IMX6_SETUP_PAD(GPIO_19__GPIO_4_5);
+	IMX6_SETUP_PAD( EIM_DA11__GPIO_3_11 ); /* p256 */
+	IMX6_SETUP_PAD( EIM_D27__GPIO_3_27 ); /* p258 */
+	IMX6_SETUP_PAD( EIM_BCLK__GPIO_6_31 ); /* p260 */
+	IMX6_SETUP_PAD( ENET_RX_ER__GPIO_1_24 ); /* p262 */
+	IMX6_SETUP_PAD( SD3_RST__GPIO_7_8 ); /* p264 */
+	IMX6_SETUP_PAD( EIM_D26__GPIO_3_26 ); /* p259 */
+	IMX6_SETUP_PAD( EIM_DA8__GPIO_3_8 ); /* p261 */
+	IMX6_SETUP_PAD( GPIO_19__GPIO_4_5 ); /* p263 */
 
 	gpio_request(IMX_GPIO_NR(3, 11), "external_gpio_0");
 	gpio_export(IMX_GPIO_NR(3, 11), true);
