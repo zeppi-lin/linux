@@ -42,7 +42,7 @@
 #include "usb.h"
 #include "board-wand.h"
 
-#include "edm.h"
+#include <linux/edm.h>
 
 #define WAND_BT_ON		IMX_GPIO_NR(3, 13)
 #define WAND_BT_WAKE		IMX_GPIO_NR(3, 14)

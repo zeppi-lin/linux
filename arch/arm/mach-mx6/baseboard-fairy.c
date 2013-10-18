@@ -14,7 +14,7 @@
 #include <mach/iomux-v3.h>
 #include <mach/mx6.h>
 
-#include "edm.h"
+#include <linux/edm.h>
 
 /****************************************************************************
  *                                                                          

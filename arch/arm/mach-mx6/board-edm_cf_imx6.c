@@ -42,7 +42,7 @@
 #include "usb.h"
 #include "board-edm_cf_imx6.h"
 
-#include "edm.h"
+#include <linux/edm.h>
 
 #define EDM_CF_IMX6_CAN1_STBY		IMX_GPIO_NR(7, 13)
 #define EDM_CF_IMX6_CAN2_STBY		IMX_GPIO_NR(1, 7)

@@ -10,7 +10,7 @@
 #include <mach/common.h>
 #include <mach/devices-common.h>
 
-#include "edm.h"
+#include <linux/edm.h>
 
 /****************************************************************************
  *                                                                          

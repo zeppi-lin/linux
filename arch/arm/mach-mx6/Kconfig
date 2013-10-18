@@ -252,10 +252,6 @@ config MACH_MX6Q_SABREAUTO
 	  Include support for i.MX 6Quad SABRE Auto platform. This includes specific
 	  configurations for the board and its peripherals.
 
-config EDM
-	bool
-	default n
-
 config MACH_WANDBOARD
 	bool "Support for the WandBoard"
 	select ARCH_MX6Q
