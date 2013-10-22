@@ -1026,6 +1026,8 @@ static struct sys_timer wand_timer = {
 
 
 #include <asm/setup.h>
+#if defined(CONFIG_ION)
+
 #include <linux/ion.h>
 
 static struct ion_platform_data wand_ion_data = {
@@ -1041,7 +1043,6 @@ static struct ion_platform_data wand_ion_data = {
 	},
 };
 
-#if defined(CONFIG_ION)
 static void wand_init_ion(void)
 {
 	if (wand_ion_data.heaps[0].size)
@@ -1080,6 +1081,7 @@ static void __init fixup_wand_board(struct machine_desc *desc, struct tag *tags,
 					pdata_fb[i++].res_size[0] = memparse(str, &str);
 				}
 			}
+		#if defined(CONFIG_ION)
 			/* ION reserved memory */
 			str = t->u.cmdline.cmdline;
 			str = strstr(str, "ionmem=");
@@ -1087,6 +1089,7 @@ static void __init fixup_wand_board(struct machine_desc *desc, struct tag *tags,
 				str += 7;
 				wand_ion_data.heaps[0].size = memparse(str, &str);
 			}
+		#endif
 			/* Primary framebuffer base address */
 			str = t->u.cmdline.cmdline;
 			str = strstr(str, "fb0base=");
