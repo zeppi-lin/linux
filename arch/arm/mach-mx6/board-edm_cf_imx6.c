@@ -1104,6 +1104,8 @@ static struct sys_timer edm_cf_imx6_timer = {
 
 
 #include <asm/setup.h>
+#if defined(CONFIG_ION)
+
 #include <linux/ion.h>
 
 static struct ion_platform_data edm_cf_imx6_ion_data = {
@@ -1119,7 +1121,6 @@ static struct ion_platform_data edm_cf_imx6_ion_data = {
 	},
 };
 
-#if defined(CONFIG_ION)
 static void edm_cf_imx6_init_ion(void)
 {
 	if (edm_cf_imx6_ion_data.heaps[0].size)
@@ -1151,6 +1152,7 @@ static void __init fixup_edm_cf_imx6_board(struct machine_desc *desc, struct tag
 					pdata_fb[i++].res_size[0] = memparse(str, &str);
 				}
 			}
+		#if defined(CONFIG_ION)
 			/* ION reserved memory */
 			str = t->u.cmdline.cmdline;
 			str = strstr(str, "ionmem=");
@@ -1158,6 +1160,7 @@ static void __init fixup_edm_cf_imx6_board(struct machine_desc *desc, struct tag
 				str += 7;
 				edm_cf_imx6_ion_data.heaps[0].size = memparse(str, &str);
 			}
+		#endif
 			/* Primary framebuffer base address */
 			str = t->u.cmdline.cmdline;
 			str = strstr(str, "fb0base=");
