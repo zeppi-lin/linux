@@ -1119,7 +1119,6 @@ static void __init fixup_wand_board(struct machine_desc *desc, struct tag *tags,
 	edm_i2c[2] = 2;
 	edm_ddc = 0;
         
-	edm_analog_audio_platform_data = &wand_audio_channel_data;
 }
 
 #ifdef CONFIG_ANDROID_RAM_CONSOLE

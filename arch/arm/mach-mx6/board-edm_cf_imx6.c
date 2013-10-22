@@ -1192,7 +1192,6 @@ static void __init fixup_edm_cf_imx6_board(struct machine_desc *desc, struct tag
 	edm_i2c[2] = 2;
 	edm_ddc = 0;
 
-	edm_analog_audio_platform_data = &edm_cf_imx6_audio_channel_data;
 }
 
 #ifdef CONFIG_ANDROID_RAM_CONSOLE
