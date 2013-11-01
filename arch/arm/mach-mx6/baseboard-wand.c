@@ -157,22 +157,22 @@ static struct gpio_keys_button wandbase_gpio_buttons[] = {
                 .code                   = KEY_POWER,
                 .desc                   = "btn power-key",
                 .wakeup                 = 1,
-                .active_low             = 0,
+                .active_low             = 1,
         }, {
-                .code                   = KEY_F8,
+                .code                   = KEY_HOMEPAGE,
                 .desc                   = "btn home-key",
                 .wakeup                 = 0,
-                .active_low             = 0,
+                .active_low             = 1,
         }, {
                 .code                   = KEY_ESC,
                 .desc                   = "btn back-key",
                 .wakeup                 = 0,
-                .active_low             = 0,
+                .active_low             = 1,
         }, {
-                .code                   = KEY_F1,
+                .code                   = KEY_MENU,
                 .desc                   = "btn menu-key",
                 .wakeup                 = 0,
-                .active_low             = 0,
+                .active_low             = 1,
         },
 };
 
