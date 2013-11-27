@@ -82,8 +82,8 @@ static struct cpu_op mx6q_cpu_op_1G[] = {
 	 .pll_rate = 996000000,
 	 .cpu_rate = 996000000,
 	 .cpu_podf = 0,
-	 .pu_voltage = 1250000,
-	 .soc_voltage = 1250000,
+	 .pu_voltage = 1275000,
+	 .soc_voltage = 1275000,
 	 .cpu_voltage = 1275000,},
 	{
 	 .pll_rate = 792000000,
