@@ -589,7 +589,7 @@ static void edm_cf_imx6_init_display(void) {
  *                                                                          
  ****************************************************************************/
 #include <linux/pwm_backlight.h>
-
+#if defined(CONFIG_BACKLIGHT_PWM) && defined(CONFIG_MXC_PWM)
 static struct platform_pwm_backlight_data edm_cf_imx6_pwm_backlight_data = {
 	.pwm_id = 2,
 	.max_brightness = 248,
@@ -603,6 +603,9 @@ static void edm_cf_imx6_init_lcd_backlight(void)
 	imx6q_add_mxc_pwm(2);
 	imx6q_add_mxc_pwm_backlight(2, &edm_cf_imx6_pwm_backlight_data);
 }
+#else
+static inline void edm_cf_imx6_init_lcd_backlight(void) { ; }
+#endif
 
 /* ------------------------------------------------------------------------ */
 
