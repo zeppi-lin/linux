@@ -346,6 +346,42 @@ void edm_cf_imx6_mux_pads_init_lcdif(void)
 	EDM_SET_PAD(PAD_DISP0_DAT23__IPU1_DISP0_DAT_23);
 }
 
+void edm_cf_imx6_mux_pads_init_ipu2_lcdif(void)
+{
+	if (!cpu_is_mx6q())
+		return;
+
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DI0_DISP_CLK__IPU2_DI0_DISP_CLK);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DI0_PIN2__IPU2_DI0_PIN2);		// HSync 
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DI0_PIN3__IPU2_DI0_PIN3);		// VSync 
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DI0_PIN4__IPU2_DI0_PIN4);		// Contrast 
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DI0_PIN15__IPU2_DI0_PIN15);		// DISP0_DRDY 
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT0__IPU2_DISP0_DAT_0);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT1__IPU2_DISP0_DAT_1);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT2__IPU2_DISP0_DAT_2);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT3__IPU2_DISP0_DAT_3);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT4__IPU2_DISP0_DAT_4);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT5__IPU2_DISP0_DAT_5);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT6__IPU2_DISP0_DAT_6);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT7__IPU2_DISP0_DAT_7);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT8__IPU2_DISP0_DAT_8);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT9__IPU2_DISP0_DAT_9);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT10__IPU2_DISP0_DAT_10);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT11__IPU2_DISP0_DAT_11);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT12__IPU2_DISP0_DAT_12);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT13__IPU2_DISP0_DAT_13);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT14__IPU2_DISP0_DAT_14);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT15__IPU2_DISP0_DAT_15);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT16__IPU2_DISP0_DAT_16);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT17__IPU2_DISP0_DAT_17);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT18__IPU2_DISP0_DAT_18);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT19__IPU2_DISP0_DAT_19);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT20__IPU2_DISP0_DAT_20);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT21__IPU2_DISP0_DAT_21);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT22__IPU2_DISP0_DAT_22);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT23__IPU2_DISP0_DAT_23);
+}
+
 /****************************************************************************
  *                                                                          
  * LDB - LVDS Display

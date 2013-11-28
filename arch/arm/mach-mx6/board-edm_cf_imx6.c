@@ -504,9 +504,16 @@ static struct fsl_mxc_lcd_platform_data edm_cf_imx6_lcdif_data = {
 };
 
 static void edm_cf_imx6_init_display_lcdif(void) {
-	edm_cf_imx6_mux_pads_init_lcdif();
-	imx6q_add_lcdif(&edm_cf_imx6_lcdif_data);
 
+	if ((edm_cf_imx6_lcdif_data.ipu_id > 1) || (!cpu_is_mx6q()))
+		edm_cf_imx6_lcdif_data.ipu_id = 0;
+
+	if (edm_cf_imx6_lcdif_data.ipu_id == 0)
+		edm_cf_imx6_mux_pads_init_lcdif();
+	else
+		edm_cf_imx6_mux_pads_init_ipu2_lcdif();
+
+	imx6q_add_lcdif(&edm_cf_imx6_lcdif_data);
 }
 /**************************/
 
@@ -973,7 +980,7 @@ static __init void edm_cf_imx6_init_external_gpios(void) {
 
 /****************************************************************************
  *                                                                          
- * SPI - while not used on the Wandboard, the pins are routed out
+ * SPI - while not used on the EDM_CF_IMX6, the pins are routed out
  *                                                                          
  ****************************************************************************/
 
