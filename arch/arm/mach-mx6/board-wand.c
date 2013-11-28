@@ -573,19 +573,14 @@ static __init void wand_init_ipu(void) {
 		for (i = 0; i < 2 && i < ARRAY_SIZE(wand_fb_pdata); i++)
 			imx6q_add_ipuv3fb(i, &wand_fb_pdata[i]);
 
-	/*
-	 * MX6DL/Solo only supports single IPU
-	 * The following codes are used to change ipu id
-	 * and display id information for MX6DL/Solo. Then
-	 * register 1 IPU device and up to 2 displays for
-	 * MX6DL/Solo
-	 */
 	if (cpu_is_mx6dl()) {
+		wand_lcdif_data.ipu_id = 0;
+		wand_lcdif_data.disp_id = 0;
 		wand_ldb_data.ipu_id = 0;
-		wand_ldb_data.disp_id = 1;
+		wand_ldb_data.disp_id = 0;
+		wand_ldb_data.mode = LDB_SIN0;
 		wand_hdmi_core_data.ipu_id = 0;
-		wand_hdmi_core_data.disp_id = 0;
-		wand_ldb_data.sec_ipu_id = 0;
+		wand_hdmi_core_data.disp_id = 1;
 	}
 	imx6q_add_vdoa();
 }
