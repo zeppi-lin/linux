@@ -43,6 +43,7 @@ extern void wand_mux_pads_init_external_gpios(void);
 extern void wand_external_gpios_to_edm_gpios(void);
 extern void wand_mux_pads_init_spi(void);
 extern void wand_mux_pads_init_lcdif(void);
+extern void wand_mux_pads_init_ipu2_lcdif(void);
 extern void wand_mux_pads_init_lvds(void);
 
 #endif

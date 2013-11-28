@@ -510,7 +510,14 @@ static struct fsl_mxc_lcd_platform_data wand_lcdif_data = {
 };
 
 static void wand_init_display_lcdif(void) {
-	wand_mux_pads_init_lcdif();
+	if ((wand_lcdif_data.ipu_id > 1) || (!cpu_is_mx6q()))
+		wand_lcdif_data.ipu_id = 0;
+
+	if (wand_lcdif_data.ipu_id == 0)
+		wand_mux_pads_init_lcdif();
+	else
+		wand_mux_pads_init_ipu2_lcdif();
+
 	imx6q_add_lcdif(&wand_lcdif_data);
 
 }
