@@ -567,19 +567,14 @@ static __init void edm_cf_imx6_init_ipu(void) {
 		for (i = 0; i < 2 && i < ARRAY_SIZE(edm_cf_imx6_fb_pdata); i++)
 			imx6q_add_ipuv3fb(i, &edm_cf_imx6_fb_pdata[i]);
 
-	/*
-	 * MX6DL/Solo only supports single IPU
-	 * The following codes are used to change ipu id
-	 * and display id information for MX6DL/Solo. Then
-	 * register 1 IPU device and up to 2 displays for
-	 * MX6DL/Solo
-	 */
 	if (cpu_is_mx6dl()) {
+		edm_cf_imx6_lcdif_data.ipu_id = 0;
+		edm_cf_imx6_lcdif_data.disp_id = 0;
 		edm_cf_imx6_ldb_data.ipu_id = 0;
-		edm_cf_imx6_ldb_data.disp_id = 1;
+		edm_cf_imx6_ldb_data.disp_id = 0;
+		edm_cf_imx6_ldb_data.mode = LDB_SIN0;
 		edm_cf_imx6_hdmi_core_data.ipu_id = 0;
-		edm_cf_imx6_hdmi_core_data.disp_id = 0;
-		edm_cf_imx6_ldb_data.sec_ipu_id = 0;
+		edm_cf_imx6_hdmi_core_data.disp_id = 1;
 	}
 	imx6q_add_vdoa();
 }
