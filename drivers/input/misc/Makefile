@@ -49,3 +49,5 @@ obj-$(CONFIG_INPUT_XEN_KBDDEV_FRONTEND)	+= xen-kbdfront.o
 obj-$(CONFIG_INPUT_YEALINK)		+= yealink.o
 obj-$(CONFIG_INPUT_DA9052_ONKEY)	+= da9052_onkey.o
 obj-$(CONFIG_INPUT_ISL29023)		+= isl29023.o
+obj-$(CONFIG_INPUT_ISL29023_POLL)       += isl29023_poll.o
+

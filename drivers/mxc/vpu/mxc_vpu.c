@@ -130,7 +130,7 @@ static int vpu_alloc_dma_buffer(struct vpu_mem_desc *mem)
 			       GFP_DMA | GFP_KERNEL);
 	pr_debug("[ALLOC] mem alloc cpu_addr = 0x%x\n", mem->cpu_addr);
 	if ((void *)(mem->cpu_addr) == NULL) {
-		printk(KERN_ERR "Physical memory allocation error!\n");
+		printk(KERN_ERR "%s,%s:Physical memory allocation error!Size %d\n",__FILE__,__FUNCTION__,mem->size);
 		return -1;
 	}
 	return 0;
@@ -305,7 +305,7 @@ static long vpu_ioctl(struct file *filp, u_int cmd,
 			if (ret == -1) {
 				kfree(rec);
 				printk(KERN_ERR
-				       "Physical memory allocation error!\n");
+				       "%s,%s:Physical memory allocation error! Size %d\n",__FILE__,__FUNCTION__,rec->mem.size);
 				break;
 			}
 			ret = copy_to_user((void __user *)arg, &(rec->mem),
