@@ -26,17 +26,13 @@
 #include <linux/edm.h>
 #include <linux/edm_display.h>
 
+#define EDM_DISPLAY_DEBUG	0
 
 /****************************************************************************
  *
  * Display Control
  *
  ****************************************************************************/
-
-#define memalloc(a) kmalloc(a, GFP_KERNEL)
-#define dbg_print	printk
-
-#define EDM_DISPLAY_DEBUG	0
 
 enum disp_control_types {
 	ENUM_DEV = 0,
@@ -117,7 +113,7 @@ void edm_disp_str_to_timing(struct edm_video_timing *timing, char * timing_str)
 
 	if ((timing == NULL) ||
 		(timing_str == NULL)) {
-		dbg_print("%s : NULL inputs!!\n", __FUNCTION__);
+		printk("%s : NULL inputs!!\n", __func__);
 		return;
 	}
 
@@ -163,19 +159,19 @@ void edm_disp_str_to_timing(struct edm_video_timing *timing, char * timing_str)
 		goto err_out;
 
 #if EDM_DISPLAY_DEBUG
-	dbg_print("Timing info :\n");
-	dbg_print("PCLK %d, XRES %d, YRES, %d\n",
+	printk("Timing info :\n");
+	printk("PCLK %d, XRES %d, YRES, %d\n",
 			timing->pixclock, timing->hres, timing->vres);
-	dbg_print("Horizontal : HFP %d, HBP %d, HSW %d\n",
+	printk("Horizontal : HFP %d, HBP %d, HSW %d\n",
 			timing->hfp, timing->hbp, timing->hsw);
-	dbg_print("Vertical : VFP %d, VBP %d, VSW %d\n\n",
+	printk("Vertical : VFP %d, VBP %d, VSW %d\n\n",
 			timing->vfp, timing->vbp, timing->vsw);
 #endif
 	return;
 
 err_out:
-	dbg_print("%s : Incorrect input timing_str, zero all outputs!!\n",
-								__FUNCTION__);
+	printk("%s : Incorrect input timing_str, zero all outputs!!\n",
+								__func__);
 	timing->pixclock	= 0;
 	timing->hres		= 0;
 	timing->hfp		= 0;
@@ -190,6 +186,14 @@ err_out:
 }
 EXPORT_SYMBOL(edm_disp_str_to_timing);
 
+/*
+  When passing pointers of "type" and "length",
+  matching result can be aquire by *type and *length.
+  Pass NULL to them will only perform matching without feedback
+  result.
+  As the result, *type will be the type of keyword string be matched,
+  and *length will the the length the this keyword string.
+*/
 static void edm_disp_string_matcher(char *string, int *type, int *length)
 {
 	int i;
@@ -218,20 +222,17 @@ out:
 static int edm_disp_process_cmdline(char *cmdline, struct edm_display_device *dev)
 {
 	#define TEMP_STR_LEN	200
-	char cmd_sub_str[TEMP_STR_LEN];
+	char cmd_sub_str[TEMP_STR_LEN] = { 0 };
 	int i = 0;
 	int str_len = 0;
 	int processed = 0;
 	int ctrl_type = ENUM_INVALID;
 
-	for (i = 0; i < TEMP_STR_LEN; i++)
-		cmd_sub_str[i] = '\0';
-
 	edm_disp_string_matcher(cmdline, &ctrl_type, &str_len);
 	if ((ctrl_type != ENUM_INVALID) && (str_len != 0)) {
 		char *temp_str;
 #if EDM_DISPLAY_DEBUG
-		dbg_print("%s:  %s  ", __FUNCTION__, disp_ctrls[ctrl_type].str);
+		printk("%s:  %s  ", __func__, disp_ctrls[ctrl_type].str);
 #endif
 		cmdline += str_len;
 		processed += str_len;
@@ -264,7 +265,7 @@ static int edm_disp_process_cmdline(char *cmdline, struct edm_display_device *de
 				cmd_sub_str[len - 1] = '\0';
 		}
 #if EDM_DISPLAY_DEBUG
-		dbg_print(" \t%s\n", cmd_sub_str);
+		printk(" \t%s\n", cmd_sub_str);
 #endif
 	}
 
@@ -303,15 +304,11 @@ static int edm_disp_process_cmdline(char *cmdline, struct edm_display_device *de
 			dev->disp_dev = EDM_DEV_INVALID;
 
 	} else if (ctrl_type == ENUM_MODE) {
-		int str_len = strlen(cmd_sub_str);
-		dev->mode_string = (char *)memalloc((str_len + 1) * sizeof(char));
-		strncpy(dev->mode_string, cmd_sub_str, (str_len + 1));
+		dev->mode_string = kstrdup(cmd_sub_str, GFP_KERNEL);
 	} else if (ctrl_type == ENUM_TIMING) {
 		edm_disp_str_to_timing(&dev->timing, cmd_sub_str);
 	} else if (ctrl_type == ENUM_IF) {
-		int str_len = strlen(cmd_sub_str);
-		dev->if_fmt = (char *)memalloc((str_len + 1) * sizeof(char));
-		strncpy(dev->if_fmt, cmd_sub_str, (str_len + 1));
+		dev->if_fmt = kstrdup(cmd_sub_str, GFP_KERNEL);
 	} else if (ctrl_type == ENUM_BPP) {
 		if (strncmp(cmd_sub_str, "32", 2) == 0)
 			dev->bpp = 32;
@@ -363,7 +360,7 @@ void edm_disp_list_valid_devs(struct edm_display_device *display_devices,
 	int i;
 
 	if ((display_devices == NULL)) {
-		dbg_print("%s : NULL inputs !!\n", __FUNCTION__);
+		printk("%s : NULL inputs !!\n", __func__);
 		return;
 	}
 
@@ -374,66 +371,66 @@ void edm_disp_list_valid_devs(struct edm_display_device *display_devices,
 			i = num_displays;
 			break;
 		}
-		dbg_print("Display Device %d:\n", i);
-		dbg_print("Transmitter\t: ");
+		printk("Display Device %d:\n", i);
+		printk("Transmitter\t: ");
 		switch (dev->disp_dev) {
 		case EDM_HDMI0:
-			dbg_print("hdmi0");
+			printk("hdmi0");
 			break;
 		case EDM_HDMI1:
-			dbg_print("hdmi1");
+			printk("hdmi1");
 			break;
 		case EDM_LVDS0:
-			dbg_print("lvds0");
+			printk("lvds0");
 			break;
 		case EDM_LVDS1:
-			dbg_print("lvds1");
+			printk("lvds1");
 			break;
 		case EDM_LVDS2:
-			dbg_print("lvds2");
+			printk("lvds2");
 			break;
 		case EDM_LVDS3:
-			dbg_print("lvds3");
+			printk("lvds3");
 			break;
 		case EDM_LVDSD_0_1:
-			dbg_print("lvdsd_0_1");
+			printk("lvdsd_0_1");
 			break;
 		case EDM_LVDSD_2_3:
-			dbg_print("lvdsd_2_3");
+			printk("lvdsd_2_3");
 			break;
 		case EDM_LCD0:
-			dbg_print("lcd0");
+			printk("lcd0");
 			break;
 		case EDM_LCD1:
-			dbg_print("lcd1");
+			printk("lcd1");
 			break;
 		case EDM_DSI0:
-			dbg_print("dsi0");
+			printk("dsi0");
 			break;
 		case EDM_DSI1:
-			dbg_print("dsi1");
+			printk("dsi1");
 			break;
 		default:
-			dbg_print("Unknown");
+			printk("Unknown");
 			break;
 		}
-		dbg_print("\n");
-		dbg_print("Mode\t\t: %s\n", dev->mode_string);
+		printk("\n");
+		printk("Mode\t\t: %s\n", dev->mode_string);
 		if (dev->timing.pixclock) {
-			dbg_print("Timing\n");
-			dbg_print("\tPCLK\t: %d\n", dev->timing.pixclock);
-			dbg_print("\tHRES\t: %d\n", dev->timing.hres);
-			dbg_print("\tHFP\t: %d\n", dev->timing.hfp);
-			dbg_print("\tHBP\t: %d\n", dev->timing.hbp);
-			dbg_print("\tHSW\t: %d\n", dev->timing.hsw);
-			dbg_print("\tVRES\t: %d\n", dev->timing.vres);
-			dbg_print("\tVFP\t: %d\n", dev->timing.vfp);
-			dbg_print("\tVBP\t: %d\n", dev->timing.vbp);
-			dbg_print("\tVSW\t: %d\n", dev->timing.vsw);
+			printk("Timing\n");
+			printk("\tPCLK\t: %d\n", dev->timing.pixclock);
+			printk("\tHRES\t: %d\n", dev->timing.hres);
+			printk("\tHFP\t: %d\n", dev->timing.hfp);
+			printk("\tHBP\t: %d\n", dev->timing.hbp);
+			printk("\tHSW\t: %d\n", dev->timing.hsw);
+			printk("\tVRES\t: %d\n", dev->timing.vres);
+			printk("\tVFP\t: %d\n", dev->timing.vfp);
+			printk("\tVBP\t: %d\n", dev->timing.vbp);
+			printk("\tVSW\t: %d\n", dev->timing.vsw);
 		}
-		dbg_print("Connection\t: %s\n", dev->if_fmt);
-		dbg_print("ColorDepth\t: %d\n", dev->bpp);
-		dbg_print("\n");
+		printk("Connection\t: %s\n", dev->if_fmt);
+		printk("ColorDepth\t: %d\n", dev->bpp);
+		printk("\n");
 	}
 }
 EXPORT_SYMBOL(edm_disp_list_valid_devs);
@@ -574,7 +571,7 @@ unsigned int edm_display_init(char *cmdline,
 #if EDM_DISPLAY_DEBUG
 	for (i = 0; i < max_displays; i++) {
 		if (disp_dev_str[i] != NULL)
-			dbg_print("%d : %s\n", i, disp_dev_str[i]);
+			printk("%d : %s\n", i, disp_dev_str[i]);
 	}
 #endif
 
