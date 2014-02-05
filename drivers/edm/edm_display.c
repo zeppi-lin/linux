@@ -38,7 +38,7 @@
 
 #define EDM_DISPLAY_DEBUG	0
 
-enum disp_cont_item {
+enum disp_control_types {
 	ENUM_DEV = 0,
 	ENUM_MODE,
 	ENUM_TIMING,
@@ -57,12 +57,12 @@ enum disp_cont_item {
 	ENUM_INVALID /*also number of display item types*/
 };
 
-struct edm_display_items {
+struct edm_disp_ctrl_items {
 	char *str;
-	enum disp_cont_item type;
+	enum disp_control_types type;
 };
 
-static struct edm_display_items disp_ident[ENUM_INVALID] = {
+static struct edm_disp_ctrl_items disp_ctrls[ENUM_INVALID] = {
 	{
 		.str = "dev=",
 		.type = ENUM_DEV,
@@ -190,7 +190,7 @@ err_out:
 }
 EXPORT_SYMBOL(edm_disp_str_to_timing);
 
-static void string_matcher(char *string, int *type, int *length)
+static void edm_disp_string_matcher(char *string, int *type, int *length)
 {
 	int i;
 	int tmp_length = 0;
@@ -200,9 +200,9 @@ static void string_matcher(char *string, int *type, int *length)
 		goto out;
 
 	for (i = 0; i < ENUM_INVALID; i++) {
-		int str_len = strlen(disp_ident[i].str);
-		if (strncmp(string, disp_ident[i].str, str_len) == 0) {
-			tmp_type = disp_ident[i].type;
+		int str_len = strlen(disp_ctrls[i].str);
+		if (strncmp(string, disp_ctrls[i].str, str_len) == 0) {
+			tmp_type = disp_ctrls[i].type;
 			tmp_length = str_len;
 			break;
 		}
@@ -215,114 +215,114 @@ out:
 }
 
 
-static int process_disp_dev(char *str, struct edm_display_device *dev)
+static int edm_disp_process_cmdline(char *cmdline, struct edm_display_device *dev)
 {
 	#define TEMP_STR_LEN	200
-	char temp_str[TEMP_STR_LEN];
+	char cmd_sub_str[TEMP_STR_LEN];
 	int i = 0;
 	int str_len = 0;
-	int process = 0;
-	int type = ENUM_INVALID;
+	int processed = 0;
+	int ctrl_type = ENUM_INVALID;
 
 	for (i = 0; i < TEMP_STR_LEN; i++)
-		temp_str[i] = '\0';
+		cmd_sub_str[i] = '\0';
 
-	string_matcher(str, &type, &str_len);
-	if ((type != ENUM_INVALID) && (str_len != 0)) {
-		char *tmp_string;
+	edm_disp_string_matcher(cmdline, &ctrl_type, &str_len);
+	if ((ctrl_type != ENUM_INVALID) && (str_len != 0)) {
+		char *temp_str;
 #if EDM_DISPLAY_DEBUG
-		dbg_print("%s:  %s  ", __FUNCTION__, disp_ident[type].str);
+		dbg_print("%s:  %s  ", __FUNCTION__, disp_ctrls[ctrl_type].str);
 #endif
-		str += str_len;
-		process += str_len;
-		tmp_string = str;
-		while (*tmp_string != '\0') {
+		cmdline += str_len;
+		processed += str_len;
+		temp_str = cmdline;
+		while (*temp_str != '\0') {
 			int match_type = ENUM_INVALID;
-			string_matcher(tmp_string, &match_type, NULL);
+			edm_disp_string_matcher(temp_str, &match_type, NULL);
 			if (match_type != ENUM_INVALID)
 				break;
 			else
-				tmp_string++;
+				temp_str++;
 		}
 
-		if ((tmp_string - str) < TEMP_STR_LEN) {
-			int len = (tmp_string - str);
+		if ((temp_str - cmdline) < TEMP_STR_LEN) {
+			int len = (temp_str - cmdline);
 			int j = 0;
-			process += len;
-			strncpy(temp_str, str, len);
+			processed += len;
+			strncpy(cmd_sub_str, cmdline, len);
 			/* Remove all '"'*/
 			for (i = 0; i < TEMP_STR_LEN; i++) {
-				if (temp_str[i] != '"') {
-					temp_str[j] = temp_str[i];
+				if (cmd_sub_str[i] != '"') {
+					cmd_sub_str[j] = cmd_sub_str[i];
 					j++;
 				}
 			}
-			temp_str[j] = '\0';
+			cmd_sub_str[j] = '\0';
 
-			len = strlen(temp_str);
-			if (temp_str[len - 1] == ',')
-				temp_str[len - 1] = '\0';
+			len = strlen(cmd_sub_str);
+			if (cmd_sub_str[len - 1] == ',')
+				cmd_sub_str[len - 1] = '\0';
 		}
 #if EDM_DISPLAY_DEBUG
-		dbg_print(" \t%s\n", temp_str);
+		dbg_print(" \t%s\n", cmd_sub_str);
 #endif
 	}
 
-	if (type == ENUM_DEV) {
-		if (strncmp(temp_str, "hdmi0", strlen("hdmi0")) == 0)
+	if (ctrl_type == ENUM_DEV) {
+		if (strncmp(cmd_sub_str, "hdmi0", strlen("hdmi0")) == 0)
 			dev->disp_dev = EDM_HDMI0;
-		else if (strncmp(temp_str, "hdmi1", strlen("hdmi1")) == 0)
+		else if (strncmp(cmd_sub_str, "hdmi1", strlen("hdmi1")) == 0)
 			dev->disp_dev = EDM_HDMI1;
-		else if (strncmp(temp_str, "lcd0", strlen("lcd0")) == 0)
+		else if (strncmp(cmd_sub_str, "lcd0", strlen("lcd0")) == 0)
 			dev->disp_dev = EDM_LCD0;
-		else if (strncmp(temp_str, "lcd1", strlen("lcd1")) == 0)
+		else if (strncmp(cmd_sub_str, "lcd1", strlen("lcd1")) == 0)
 			dev->disp_dev = EDM_LCD1;
-		else if (strncmp(temp_str, "lvds0", strlen("lvds0")) == 0)
+		else if (strncmp(cmd_sub_str, "lvds0", strlen("lvds0")) == 0)
 			dev->disp_dev = EDM_LVDS0;
-		else if (strncmp(temp_str, "lvds1", strlen("lvds1")) == 0)
+		else if (strncmp(cmd_sub_str, "lvds1", strlen("lvds1")) == 0)
 			dev->disp_dev = EDM_LVDS1;
-		else if (strncmp(temp_str, "lvds2", strlen("lvds2")) == 0)
+		else if (strncmp(cmd_sub_str, "lvds2", strlen("lvds2")) == 0)
 			dev->disp_dev = EDM_LVDS2;
-		else if (strncmp(temp_str, "lvds3", strlen("lvds3")) == 0)
+		else if (strncmp(cmd_sub_str, "lvds3", strlen("lvds3")) == 0)
 			dev->disp_dev = EDM_LVDS3;
-		else if (strncmp(temp_str, "lvdsd", strlen("lvdsd")) == 0)
+		else if (strncmp(cmd_sub_str, "lvdsd", strlen("lvdsd")) == 0)
 			dev->disp_dev = EDM_LVDSD_0_1;
-		else if (strncmp(temp_str, "lvdsd0", strlen("lvdsd0")) == 0)
+		else if (strncmp(cmd_sub_str, "lvdsd0", strlen("lvdsd0")) == 0)
 			dev->disp_dev = EDM_LVDSD_0_1;
-		else if (strncmp(temp_str, "lvdsd01", strlen("lvdsd01")) == 0)
+		else if (strncmp(cmd_sub_str, "lvdsd01", strlen("lvdsd01")) == 0)
 			dev->disp_dev = EDM_LVDSD_0_1;
-		else if (strncmp(temp_str, "lvdsd1", strlen("lvdsd1")) == 0)
+		else if (strncmp(cmd_sub_str, "lvdsd1", strlen("lvdsd1")) == 0)
 			dev->disp_dev = EDM_LVDSD_2_3;
-		else if (strncmp(temp_str, "lvdsd23", strlen("lvdsd23")) == 0)
+		else if (strncmp(cmd_sub_str, "lvdsd23", strlen("lvdsd23")) == 0)
 			dev->disp_dev = EDM_LVDSD_2_3;
-		else if (strncmp(temp_str, "dsi0", strlen("dsi0")) == 0)
+		else if (strncmp(cmd_sub_str, "dsi0", strlen("dsi0")) == 0)
 			dev->disp_dev = EDM_DSI0;
-		else if (strncmp(temp_str, "dsi1", strlen("dsi1")) == 0)
+		else if (strncmp(cmd_sub_str, "dsi1", strlen("dsi1")) == 0)
 			dev->disp_dev = EDM_DSI1;
 		else
 			dev->disp_dev = EDM_DEV_INVALID;
 
-	} else if (type == ENUM_MODE) {
-		int str_len = strlen(temp_str);
+	} else if (ctrl_type == ENUM_MODE) {
+		int str_len = strlen(cmd_sub_str);
 		dev->mode_string = (char *)memalloc((str_len + 1) * sizeof(char));
-		strncpy(dev->mode_string, temp_str, (str_len + 1));
-	} else if (type == ENUM_TIMING) {
-		edm_disp_str_to_timing(&dev->timing, temp_str);
-	} else if (type == ENUM_IF) {
-		int str_len = strlen(temp_str);
+		strncpy(dev->mode_string, cmd_sub_str, (str_len + 1));
+	} else if (ctrl_type == ENUM_TIMING) {
+		edm_disp_str_to_timing(&dev->timing, cmd_sub_str);
+	} else if (ctrl_type == ENUM_IF) {
+		int str_len = strlen(cmd_sub_str);
 		dev->if_fmt = (char *)memalloc((str_len + 1) * sizeof(char));
-		strncpy(dev->if_fmt, temp_str, (str_len + 1));
-	} else if (type == ENUM_BPP) {
-		if (strncmp(temp_str, "32", 2) == 0)
+		strncpy(dev->if_fmt, cmd_sub_str, (str_len + 1));
+	} else if (ctrl_type == ENUM_BPP) {
+		if (strncmp(cmd_sub_str, "32", 2) == 0)
 			dev->bpp = 32;
-		else if (strncmp(temp_str, "24", 2) == 0)
+		else if (strncmp(cmd_sub_str, "24", 2) == 0)
 			dev->bpp = 24;
-		else if (strncmp(temp_str, "16", 2) == 0)
+		else if (strncmp(cmd_sub_str, "16", 2) == 0)
 			dev->bpp = 16;
 		else
 			dev->bpp = 0;
 	}
-	return process;
+	return processed;
 }
 
 /* Result
@@ -357,7 +357,7 @@ Connection	: RGB565
 ColorDepth	: 16
 */
 
-void edm_disp_list_dev(struct edm_display_device *display_devices,
+void edm_disp_list_valid_devs(struct edm_display_device *display_devices,
 						int num_displays)
 {
 	int i;
@@ -436,9 +436,9 @@ void edm_disp_list_dev(struct edm_display_device *display_devices,
 		dbg_print("\n");
 	}
 }
-EXPORT_SYMBOL(edm_disp_list_dev);
+EXPORT_SYMBOL(edm_disp_list_valid_devs);
 
-static void check_disp_dev(struct edm_display_device *display_devices,
+static void edm_disp_check_lvds(struct edm_display_device *display_devices,
 						int *num_displays)
 {
 	int lvds0 = 0;
@@ -587,7 +587,7 @@ unsigned int edm_display_init(char *cmdline,
 			num_displays++;
 
 			while ((*str != '\0') && (*str != ' ')) {
-				prc_len = process_disp_dev(str, dev);
+				prc_len = edm_disp_process_cmdline(str, dev);
 				if (prc_len != 0)
 					str += prc_len;
 				else if (*str == ',')
@@ -600,9 +600,9 @@ unsigned int edm_display_init(char *cmdline,
 		}
 	}
 
-	check_disp_dev(display_devices, &num_displays);
+	edm_disp_check_lvds(display_devices, &num_displays);
 #if EDM_DISPLAY_DEBUG
-	edm_disp_list_dev(display_devices, num_displays);
+	edm_disp_list_valid_devs(display_devices, num_displays);
 #endif
 
 err_out:
