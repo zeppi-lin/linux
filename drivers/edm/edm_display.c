@@ -219,7 +219,7 @@ out:
 }
 
 
-static int edm_disp_process_cmdline(char *cmdline, struct edm_display_device *dev)
+static int edm_disp_process_cmdline(char *cmdline, struct edm_display_device *dev, int index)
 {
 	#define TEMP_STR_LEN	200
 	char cmd_sub_str[TEMP_STR_LEN] = { 0 };
@@ -276,53 +276,53 @@ static int edm_disp_process_cmdline(char *cmdline, struct edm_display_device *de
 
 	if (ctrl_type == ENUM_DEV) {
 		if (strncmp(cmd_sub_str, "hdmi0", strlen("hdmi0")) == 0)
-			dev->disp_dev = EDM_HDMI0;
+			dev[index].disp_dev = EDM_HDMI0;
 		else if (strncmp(cmd_sub_str, "hdmi1", strlen("hdmi1")) == 0)
-			dev->disp_dev = EDM_HDMI1;
+			dev[index].disp_dev = EDM_HDMI1;
 		else if (strncmp(cmd_sub_str, "lcd0", strlen("lcd0")) == 0)
-			dev->disp_dev = EDM_LCD0;
+			dev[index].disp_dev = EDM_LCD0;
 		else if (strncmp(cmd_sub_str, "lcd1", strlen("lcd1")) == 0)
-			dev->disp_dev = EDM_LCD1;
+			dev[index].disp_dev = EDM_LCD1;
 		else if (strncmp(cmd_sub_str, "lvds0", strlen("lvds0")) == 0)
-			dev->disp_dev = EDM_LVDS0;
+			dev[index].disp_dev = EDM_LVDS0;
 		else if (strncmp(cmd_sub_str, "lvds1", strlen("lvds1")) == 0)
-			dev->disp_dev = EDM_LVDS1;
+			dev[index].disp_dev = EDM_LVDS1;
 		else if (strncmp(cmd_sub_str, "lvds2", strlen("lvds2")) == 0)
-			dev->disp_dev = EDM_LVDS2;
+			dev[index].disp_dev = EDM_LVDS2;
 		else if (strncmp(cmd_sub_str, "lvds3", strlen("lvds3")) == 0)
-			dev->disp_dev = EDM_LVDS3;
+			dev[index].disp_dev = EDM_LVDS3;
 		else if (strncmp(cmd_sub_str, "lvdsd", strlen("lvdsd")) == 0)
-			dev->disp_dev = EDM_LVDSD_0_1;
+			dev[index].disp_dev = EDM_LVDSD_0_1;
 		else if (strncmp(cmd_sub_str, "lvdsd0", strlen("lvdsd0")) == 0)
-			dev->disp_dev = EDM_LVDSD_0_1;
+			dev[index].disp_dev = EDM_LVDSD_0_1;
 		else if (strncmp(cmd_sub_str, "lvdsd01", strlen("lvdsd01")) == 0)
-			dev->disp_dev = EDM_LVDSD_0_1;
+			dev[index].disp_dev = EDM_LVDSD_0_1;
 		else if (strncmp(cmd_sub_str, "lvdsd1", strlen("lvdsd1")) == 0)
-			dev->disp_dev = EDM_LVDSD_2_3;
+			dev[index].disp_dev = EDM_LVDSD_2_3;
 		else if (strncmp(cmd_sub_str, "lvdsd23", strlen("lvdsd23")) == 0)
-			dev->disp_dev = EDM_LVDSD_2_3;
+			dev[index].disp_dev = EDM_LVDSD_2_3;
 		else if (strncmp(cmd_sub_str, "dsi0", strlen("dsi0")) == 0)
-			dev->disp_dev = EDM_DSI0;
+			dev[index].disp_dev = EDM_DSI0;
 		else if (strncmp(cmd_sub_str, "dsi1", strlen("dsi1")) == 0)
-			dev->disp_dev = EDM_DSI1;
+			dev[index].disp_dev = EDM_DSI1;
 		else
-			dev->disp_dev = EDM_DEV_INVALID;
+			dev[index].disp_dev = EDM_DEV_INVALID;
 
 	} else if (ctrl_type == ENUM_MODE) {
-		dev->mode_string = kstrdup(cmd_sub_str, GFP_KERNEL);
+		dev[index].mode_string = kstrdup(cmd_sub_str, GFP_KERNEL);
 	} else if (ctrl_type == ENUM_TIMING) {
-		edm_disp_str_to_timing(&dev->timing, cmd_sub_str);
+		edm_disp_str_to_timing(&dev[index].timing, cmd_sub_str);
 	} else if (ctrl_type == ENUM_IF) {
-		dev->if_fmt = kstrdup(cmd_sub_str, GFP_KERNEL);
+		dev[index].if_fmt = kstrdup(cmd_sub_str, GFP_KERNEL);
 	} else if (ctrl_type == ENUM_BPP) {
 		if (strncmp(cmd_sub_str, "32", 2) == 0)
-			dev->bpp = 32;
+			dev[index].bpp = 32;
 		else if (strncmp(cmd_sub_str, "24", 2) == 0)
-			dev->bpp = 24;
+			dev[index].bpp = 24;
 		else if (strncmp(cmd_sub_str, "16", 2) == 0)
-			dev->bpp = 16;
+			dev[index].bpp = 16;
 		else
-			dev->bpp = 0;
+			dev[index].bpp = 0;
 	}
 	return processed;
 }
@@ -370,15 +370,13 @@ void edm_disp_list_valid_devs(struct edm_display_device *display_devices,
 	}
 
 	for (i = 0; i < num_displays; i++) {
-		struct edm_display_device *dev;
-		dev = &display_devices[i];
-		if (dev == NULL) {
+		if ((display_devices + i) == NULL) {
 			i = num_displays;
 			break;
 		}
 		printk("Display Device %d:\n", i);
 		printk("Transmitter\t: ");
-		switch (dev->disp_dev) {
+		switch (display_devices[i].disp_dev) {
 		case EDM_HDMI0:
 			printk("hdmi0");
 			break;
@@ -420,21 +418,21 @@ void edm_disp_list_valid_devs(struct edm_display_device *display_devices,
 			break;
 		}
 		printk("\n");
-		printk("Mode\t\t: %s\n", dev->mode_string);
-		if (dev->timing.pixclock) {
+		printk("Mode\t\t: %s\n", display_devices[i].mode_string);
+		if (display_devices[i].timing.pixclock) {
 			printk("Timing\n");
-			printk("\tPCLK\t: %d\n", dev->timing.pixclock);
-			printk("\tHRES\t: %d\n", dev->timing.hres);
-			printk("\tHFP\t: %d\n", dev->timing.hfp);
-			printk("\tHBP\t: %d\n", dev->timing.hbp);
-			printk("\tHSW\t: %d\n", dev->timing.hsw);
-			printk("\tVRES\t: %d\n", dev->timing.vres);
-			printk("\tVFP\t: %d\n", dev->timing.vfp);
-			printk("\tVBP\t: %d\n", dev->timing.vbp);
-			printk("\tVSW\t: %d\n", dev->timing.vsw);
+			printk("\tPCLK\t: %d\n", display_devices[i].timing.pixclock);
+			printk("\tHRES\t: %d\n", display_devices[i].timing.hres);
+			printk("\tHFP\t: %d\n", display_devices[i].timing.hfp);
+			printk("\tHBP\t: %d\n", display_devices[i].timing.hbp);
+			printk("\tHSW\t: %d\n", display_devices[i].timing.hsw);
+			printk("\tVRES\t: %d\n", display_devices[i].timing.vres);
+			printk("\tVFP\t: %d\n", display_devices[i].timing.vfp);
+			printk("\tVBP\t: %d\n", display_devices[i].timing.vbp);
+			printk("\tVSW\t: %d\n", display_devices[i].timing.vsw);
 		}
-		printk("Connection\t: %s\n", dev->if_fmt);
-		printk("ColorDepth\t: %d\n", dev->bpp);
+		printk("Connection\t: %s\n", display_devices[i].if_fmt);
+		printk("ColorDepth\t: %d\n", display_devices[i].bpp);
 		printk("\n");
 	}
 }
@@ -452,9 +450,7 @@ static void edm_disp_check_lvds(struct edm_display_device *display_devices,
 	int i;
 
 	for (i = 0; i < *num_displays; i++) {
-		struct edm_display_device *dev;
-		dev = &display_devices[i];
-		switch (dev->disp_dev) {
+		switch (display_devices[i].disp_dev) {
 		case EDM_LVDS0:
 			lvds0 = 1;
 			if (lvdsd0) {
@@ -583,17 +579,14 @@ unsigned int edm_display_init(char *cmdline,
 	for (i = 0; i < max_displays; i++) {
 		if (disp_dev_str[i] != NULL) {
 			char *str = disp_dev_str[i];
-			struct edm_display_device *dev = display_devices + i;
 			int prc_len = 0;
 
 			num_displays++;
 
 			while ((*str != '\0') && (*str != ' ')) {
-				prc_len = edm_disp_process_cmdline(str, dev);
+				prc_len = edm_disp_process_cmdline(str, display_devices, i);
 				if (prc_len != 0)
 					str += prc_len;
-				else if (*str == ',')
-					str++;
 				else
 					str++;
 			}

@@ -859,7 +859,7 @@ static struct ipuv3_fb_platform_data mx6_preset_fb_data[] = {
 };
 
 
-struct edm_display_device *edm_display_devices = NULL;
+static struct edm_display_device edm_display_devices[MX6_MAX_DISPLAYS];
 
 static void __init mx6_init_ipuv3_fb(void)
 {
@@ -872,7 +872,7 @@ static void __init mx6_init_ipuv3_fb(void)
 		struct edm_display_device *dev;
 		struct ipuv3_fb_platform_data *ipufb;
 		ipufb = &mx6_ipuv3_fb_pdata[i];
-		dev = &edm_display_devices[i];
+		dev = edm_display_devices + i;
 
 		if (dev->disp_dev == EDM_DEV_INVALID)
 			break;
@@ -1054,9 +1054,7 @@ void mx6_init_display(void)
 	mx6_display_ch_capability_setup(1, 0, 1, 1, 0, 0, 1);
 
 #if defined(CONFIG_EDM)
-	edm_display_devices = kmalloc(mx6_max_displays * sizeof(struct edm_display_device), GFP_KERNEL);
-	if (edm_display_devices != NULL)
-		edm_display_init(saved_command_line, edm_display_devices, mx6_max_displays);
+	edm_display_init(saved_command_line, edm_display_devices, mx6_max_displays);
 #endif
 	mx6_init_ipuv3_fb();
 
