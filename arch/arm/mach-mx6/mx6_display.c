@@ -28,6 +28,7 @@
 #include "devices-imx6q.h"
 #include "mx6_display.h"
 
+#define MX6_DISPLAY_DEBUG_ON	0
 
 /****************************************************************************
  *
@@ -195,7 +196,7 @@ struct mx6_display_array mx6_4_disp_ref_setting[] = {
 {    -1, {    1,     1,     1,     1,     1,     1,     1},                "  Stop condition ", {0, 0}, {0, 0}, {0, 0}, {0, 0, SIN0, 0, 0}, {0, 0} },
 };
 
-#ifdef MX6_DISPLAY_DEBUG_ON
+#if MX6_DISPLAY_DEBUG_ON
 static void mx6_display_ch_avaiability_list(struct mx6_display_array *ary_lst, char *tags)
 {
 	int count, i;
@@ -523,7 +524,7 @@ void mx6_display_ch_capability_setup(int lcd0, int lcd1, int hdmi, int lvds0,
 	if (total_ch > 3)
 		mx6_display_ch_avaiability_enable_list(mx6_4_disp_ref_setting, ch_status);
 
-#ifdef MX6_DISPLAY_DEBUG_ON
+#if MX6_DISPLAY_DEBUG_ON
 	mx6_display_ch_avaiability_list(mx6_1_disp_ref_setting, "mx6_1_disp_ref_setting");
 	if (cpu_is_mx6dl()) {
 		mx6_display_ch_avaiability_list(mx6_2_disp_1ipu_ref_setting, "mx6_2_disp_1ipu_ref_setting");
@@ -676,7 +677,7 @@ static void __init mx6_init_display_transmitter(struct ipuv3_fb_platform_data *i
 	}
 
 	if (ref_setting != NULL) {
-	#ifdef MX6_DISPLAY_DEBUG_ON
+	#if MX6_DISPLAY_DEBUG_ON
 		printk("\n%s : %s from %s\n\n", __FUNCTION__, ref_setting->desc, string);
 	#endif
 		mx6_hdmi_core_data.ipu_id 	= ref_setting->s_hdmi.ipu_id;
@@ -740,7 +741,7 @@ enable_transmitter:
 			mx6_disp_ctrls->hdmi_enable(1);
 	}
 
-#ifdef MX6_DISPLAY_DEBUG_ON
+#if MX6_DISPLAY_DEBUG_ON
 	printk("\nList of Transmitter IPU Setting:\n");
 	if (disp_ch[MX6_HDMI] == 1)
 		printk("HDMI : IPU %d, DI %d\n", mx6_hdmi_core_data.ipu_id, mx6_hdmi_core_data.disp_id);
