@@ -223,19 +223,18 @@ static int edm_disp_process_cmdline(char *cmdline, struct edm_display_device *de
 {
 	#define TEMP_STR_LEN	200
 	char cmd_sub_str[TEMP_STR_LEN] = { 0 };
-	int i = 0;
-	int str_len = 0;
+	int nof_chars = 0;
 	int processed = 0;
 	int ctrl_type = ENUM_INVALID;
 
-	edm_disp_string_matcher(cmdline, &ctrl_type, &str_len);
-	if ((ctrl_type != ENUM_INVALID) && (str_len != 0)) {
+	edm_disp_string_matcher(cmdline, &ctrl_type, &nof_chars);
+	if ((ctrl_type != ENUM_INVALID) && (nof_chars != 0)) {
 		char *temp_str;
 #if EDM_DISPLAY_DEBUG
 		printk("%s:  %s  ", __func__, disp_ctrls[ctrl_type].str);
 #endif
-		cmdline += str_len;
-		processed += str_len;
+		cmdline += nof_chars;
+		processed += nof_chars;
 		temp_str = cmdline;
 		while (*temp_str != '\0') {
 			int match_type = ENUM_INVALID;
@@ -246,23 +245,29 @@ static int edm_disp_process_cmdline(char *cmdline, struct edm_display_device *de
 				temp_str++;
 		}
 
-		if ((temp_str - cmdline) < TEMP_STR_LEN) {
-			int len = (temp_str - cmdline);
-			int j = 0;
-			processed += len;
-			strncpy(cmd_sub_str, cmdline, len);
-			/* Remove all '"'*/
-			for (i = 0; i < TEMP_STR_LEN; i++) {
-				if (cmd_sub_str[i] != '"') {
-					cmd_sub_str[j] = cmd_sub_str[i];
-					j++;
-				}
-			}
-			cmd_sub_str[j] = '\0';
+		processed += (temp_str - cmdline);
 
-			len = strlen(cmd_sub_str);
-			if (cmd_sub_str[len - 1] == ',')
-				cmd_sub_str[len - 1] = '\0';
+		if ((temp_str - cmdline) > 0) {
+			if ((temp_str - cmdline) < TEMP_STR_LEN) {
+				int i, j;
+				int length = (temp_str - cmdline);
+				j = 0;
+				/* Remove all '"' in sub-string */
+				for (i = 0; i < length; i++) {
+					if (cmdline[i] != '"') {
+						cmd_sub_str[j] = cmdline[i];
+						j++;
+					}
+				}
+				cmd_sub_str[j] = '\0';
+
+				/* Remove trailling ',' */
+				length = strlen(cmd_sub_str);
+				if (cmd_sub_str[length - 1] == ',')
+					cmd_sub_str[length - 1] = '\0';
+			} else {
+				printk("%s:Error! Increase buffer size.\n", __func__);
+			}
 		}
 #if EDM_DISPLAY_DEBUG
 		printk(" \t%s\n", cmd_sub_str);
