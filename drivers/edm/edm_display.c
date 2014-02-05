@@ -38,6 +38,7 @@ enum disp_control_types {
 	ENUM_DEV = 0,
 	ENUM_MODE,
 	ENUM_TIMING,
+	ENUM_CVT,
 	ENUM_IF,
 	ENUM_BPP,
 	ENUM_CHAR,
@@ -68,6 +69,9 @@ static struct edm_disp_ctrl_items disp_ctrls[ENUM_INVALID] = {
 	}, {
 		.str = "timing=",
 		.type = ENUM_TIMING,
+	}, {
+		.str = "cvt=",
+		.type = ENUM_CVT,
 	}, {
 		.str = "if=",
 		.type = ENUM_IF,
@@ -323,6 +327,12 @@ static int edm_disp_process_cmdline(char *cmdline, struct edm_display_device *de
 			dev[index].bpp = 16;
 		else
 			dev[index].bpp = 0;
+	} else if (ctrl_type == ENUM_CVT) {
+		/* Auto CVT timing generator */
+		/* To be implemented */
+	} else if (ctrl_type == ENUM_CHAR) {
+		/* Signal charater settings */
+		/* To be implemented */
 	}
 	return processed;
 }
