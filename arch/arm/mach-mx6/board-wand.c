@@ -417,9 +417,9 @@ static __init void wand_init_usb(void)
 }
 
 /****************************************************************************
- *                                                                          
+ *
  * IPU
- *                                                                          
+ *
  ****************************************************************************/
 
 static struct imx_ipuv3_platform_data wand_ipu_data[] = {
@@ -442,9 +442,9 @@ static __init void wand_init_ipu(void)
 }
 
 /****************************************************************************
- *                                                                          
+ *
  * MX6 DISPLAY CONTROL FRAMEWORK
- *                                                                          
+ *
  ****************************************************************************/
 
 #include "mx6_display.h"
@@ -627,12 +627,10 @@ static struct imx_bt_rfkill_platform_data wandboard_bt_rfkill_data = {
 };
 
 static const struct imxuart_platform_data wand_bt_uart_data = {
-	.flags = IMXUART_HAVE_RTSCTS,
+	.flags      = IMXUART_HAVE_RTSCTS,
 	.dma_req_tx = MX6Q_DMA_REQ_UART3_TX,
 	.dma_req_rx = MX6Q_DMA_REQ_UART3_RX,
 };
-
-/* ------------------------------------------------------------------------ */
 
 /* This assumes wifi is initialized (chip has power) */
 static __init void wand_init_bluetooth(void)
@@ -687,9 +685,9 @@ static void wand_suspend_exit(void)
 /* ------------------------------------------------------------------------ */
 
 static const struct pm_platform_data wand_pm_data = {
-	.name		= "imx_pm",
-	.suspend_enter	= wand_suspend_enter,
-	.suspend_exit	= wand_suspend_exit,
+	.name           = "imx_pm",
+	.suspend_enter  = wand_suspend_enter,
+	.suspend_exit   = wand_suspend_exit,
 };
 
 /* ------------------------------------------------------------------------ */
@@ -994,7 +992,7 @@ static void __init wand_init_edm(void)
 	edm_audio_data[0].platform_data = &wand_audio_channel_data;
 }
 #else
-static inline void wand_init_edm(void) { ; } ;
+static inline void wand_init_edm(void) { ; };
 #endif
 /*****************************************************************************
  *                                                                           
