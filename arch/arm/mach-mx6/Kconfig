@@ -320,6 +320,8 @@ config MACH_EDM_CF_IMX6
 	help
 	  Include support for compact size iMX6Q module
 
+source "drivers/edm/Kconfig"
+
 config MACH_MX6Q_HDMIDONGLE
 	bool "Support i.MX 6Quad HDMIDONGLE platform"
 	select ARCH_MX6Q
