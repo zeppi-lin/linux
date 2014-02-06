@@ -19,34 +19,34 @@
 
 #define WANDQC_TSC2046_IRQ edm_external_gpio[8]
 
-int wandqc_get_tsc2046_pendown_state(void)
+static int wandqc_get_tsc2046_pendown_state(void)
 {
 	return !gpio_get_value(WANDQC_TSC2046_IRQ);
 }
 
 static struct ads7846_platform_data wandqc_tsc2046_config = {
-	.x_max			= 0x0fff,
-	.y_max			= 0x0fff,
-	.pressure_max		= 255,
-	.get_pendown_state	= wandqc_get_tsc2046_pendown_state,
-	.keep_vref_on		= 1,
-	.wakeup			= true,
+	.x_max              = 0x0fff,
+	.y_max              = 0x0fff,
+	.pressure_max       = 255,
+	.get_pendown_state  = wandqc_get_tsc2046_pendown_state,
+	.keep_vref_on       = 1,
+	.wakeup             = true,
 };
 
-static struct spi_board_info wandqc_tsc2046_spi_data  = {
-	.modalias		= "ads7846",
-	.bus_num		= 0, /* Modified runtime */
-	.chip_select		= 0,
-	.max_speed_hz		= 1500000,
-	.irq			= -EINVAL,
-	.platform_data		= &wandqc_tsc2046_config,
+static struct spi_board_info wandqc_tsc2046_spi_data = {
+	.modalias       = "ads7846",
+	.bus_num        = 0, /* Modified runtime */
+	.chip_select    = 0,
+	.max_speed_hz   = 1500000,
+	.irq            = -EINVAL,
+	.platform_data  = &wandqc_tsc2046_config,
 };
 
-static struct spi_board_info wandqc_spidev_data  = {
-	.modalias		= "spidev",
-	.bus_num		= 0, /* Modified runtime */
-	.chip_select		= 0,
-	.max_speed_hz		= 15000000,
+static struct spi_board_info wandqc_spidev_data = {
+	.modalias       = "spidev",
+	.bus_num        = 0, /* Modified runtime */
+	.chip_select    = 0,
+	.max_speed_hz   = 15000000,
 };
 
 
