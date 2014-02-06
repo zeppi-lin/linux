@@ -4,7 +4,6 @@
 #include <linux/clk.h>
 #include <linux/edm.h>
 #include <linux/i2c.h>
-#include <linux/i2c/lis331dlh.h>
 #include <linux/platform_device.h>
 #include <linux/regulator/fixed.h>
 #include <linux/regulator/machine.h>
@@ -192,14 +191,14 @@ static void __init fairy_init_ts(void)
  ****************************************************************************/
 
 static struct i2c_board_info fairy_isl29023_binfo = {
-	I2C_BOARD_INFO("isl29018", 0x44),
+	I2C_BOARD_INFO("isl29023", 0x44),
 	.platform_data  = NULL,
 	.irq            = -EINVAL,
 };
 
 static void __init fairy_init_lightsensor(void)
 {
-	fairy_isl29023_binfo.irq  = gpio_to_irq(edm_external_gpio[6]),
+/*	fairy_isl29023_binfo.irq  = gpio_to_irq(edm_external_gpio[6]);*/
 	i2c_register_board_info(edm_i2c[2], &fairy_isl29023_binfo, 1);
 }
 
@@ -218,7 +217,7 @@ static struct i2c_board_info fairy_mag3110_binfo = {
 
 static void __init fairy_init_compass(void)
 {
-	fairy_mag3110_binfo.irq = gpio_to_irq(edm_external_gpio[5]),
+/*	fairy_mag3110_binfo.irq = gpio_to_irq(edm_external_gpio[5]);*/
 	i2c_register_board_info(edm_i2c[2], &fairy_mag3110_binfo, 1);
 }
 
@@ -227,17 +226,29 @@ static void __init fairy_init_compass(void)
  * LIS331D accelerometer
  *
  ****************************************************************************/
+#include <linux/lis3lv02d.h>
 
-static struct lis331dlh_platform_data fairy_lis331dlh_data = {
-	.min_interval = 1,
-	.poll_interval = 200,
-	.g_range = LIS331DLH_G_8G,
-	.axis_map_x = 0,
-	.axis_map_y = 1,
-	.axis_map_z = 2,
-	.negate_x = 0,
-	.negate_y = 0,
-	.negate_z = 0,
+static struct lis3lv02d_platform_data fairy_lis331dlh_data = {
+	.click_flags        = LIS3_CLICK_SINGLE_X |
+		LIS3_CLICK_SINGLE_Y |
+		LIS3_CLICK_SINGLE_Z,
+
+	.wakeup_flags       = LIS3_WAKEUP_X_LO | LIS3_WAKEUP_X_HI |
+		LIS3_WAKEUP_Y_LO | LIS3_WAKEUP_Y_HI |
+		LIS3_WAKEUP_Z_LO | LIS3_WAKEUP_Z_HI,
+
+	.irq_cfg            = LIS3_IRQ1_CLICK | LIS3_IRQ2_CLICK,
+	.wakeup_thresh      = 10,
+	.click_thresh_x     = 10,
+	.click_thresh_y     = 10,
+	.click_thresh_z     = 10,
+	.g_range            = 2,
+	.st_min_limits[0]	= 120,
+	.st_min_limits[1]   = 120,
+	.st_min_limits[2]   = 140,
+	.st_max_limits[0]   = 550,
+	.st_max_limits[1]   = 550,
+	.st_max_limits[2]   = 750,
 };
 
 static const struct i2c_board_info fairy_lis331dlh_binfo = {
