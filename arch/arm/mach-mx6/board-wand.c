@@ -1,5 +1,5 @@
 /*
-    Wandboard board file. 
+    Wandboard board file.
     Copyright (C) 2013 Tapani Utriainen, Edward Lin
 
     This program is free software; you can redistribute it and/or modify
@@ -44,33 +44,14 @@
 
 #include <linux/edm.h>
 
-#define WAND_BT_ON		IMX_GPIO_NR(3, 13)
-#define WAND_BT_WAKE		IMX_GPIO_NR(3, 14)
-#define WAND_BT_HOST_WAKE	IMX_GPIO_NR(3, 15)
-
-#define WAND_RGMII_INT		IMX_GPIO_NR(1, 28)
-#define WAND_RGMII_RST		IMX_GPIO_NR(3, 29)
-
-#define WAND_USB_OTG_OC		IMX_GPIO_NR(1, 9)
-#define WAND_USB_OTG_PWR	IMX_GPIO_NR(3, 22)
-#define WAND_USB_H1_OC		IMX_GPIO_NR(3, 30)
-
-#define WAND_WL_REF_ON		IMX_GPIO_NR(2, 29)
-#define WAND_WL_RST_N		IMX_GPIO_NR(5, 2)
-#define WAND_WL_REG_ON		IMX_GPIO_NR(1, 26)
-#define WAND_WL_HOST_WAKE	IMX_GPIO_NR(1, 29)
-#define WAND_WL_WAKE		IMX_GPIO_NR(1, 30)
-
-
-/* See arch/arm/plat-mxc/include/mach/iomux-mx6dl.h for definitions */
-
 /****************************************************************************
  *                                                                          
  * DMA controller init
  *                                                                          
  ****************************************************************************/
 
-static __init void wand_init_dma(void) {
+static __init void wand_init_dma(void)
+{
         imx6q_add_dma();        
 }
 
@@ -85,24 +66,27 @@ static __init void wand_init_dma(void) {
  *                                                                          
  ****************************************************************************/
 
-/* ------------------------------------------------------------------------ */
+static int fs_in_sdcard = 0;
 
-static int wand_sd_speed_change(unsigned int sd, int clock) {
+static int wand_sd_speed_change(unsigned int sd, int clock)
+{
 	static int pad_speed[3] = { 200, 200, 200 };
 
 	if (clock > 100000000) {                
-		if (pad_speed[sd] == 200) return 0;
+		if (pad_speed[sd] == 200)
+			return 0;
 		pad_speed[sd] = 200;
-		wand_mux_pads_init_sdmmc(sd,200);
-
+		wand_mux_pads_init_sdmmc(sd, 200);
 	} else if (clock > 52000000) {
-		if (pad_speed[sd] == 100) return 0;
+		if (pad_speed[sd] == 100)
+			return 0;
 		pad_speed[sd] = 100;
-		wand_mux_pads_init_sdmmc(sd,100);
+		wand_mux_pads_init_sdmmc(sd, 100);
 	} else {
-		if (pad_speed[sd] == 50) return 0;
+		if (pad_speed[sd] == 50)
+			return 0;
 		pad_speed[sd] = 50;
-		wand_mux_pads_init_sdmmc(sd,50);
+		wand_mux_pads_init_sdmmc(sd, 50);
 	}
 	return 0;
 }
@@ -115,43 +99,51 @@ static int wand_sd_speed_change(unsigned int sd, int clock) {
 
 static const struct esdhc_platform_data wand_sd_data[3] = {
 	{
-		.cd_gpio		= WAND_SD1_CD,
-		.wp_gpio		= -EINVAL,
-		.keep_power_at_suspend	= 1,
-	        .support_8bit		= 0,
-		.platform_pad_change	= wand_sd_speed_change,
-                .cd_type                = ESDHC_CD_CONTROLLER,
+		.cd_gpio                = WAND_SD1_CD,
+		.wp_gpio                = -EINVAL,
+		.keep_power_at_suspend  = 1,
+		.support_8bit           = 0,
+		.platform_pad_change    = wand_sd_speed_change,
+		.cd_type                = ESDHC_CD_CONTROLLER,
 	}, {
-		.cd_gpio		=-EINVAL,
-		.wp_gpio		=-EINVAL,
-		.keep_power_at_suspend	= 1,
-		.platform_pad_change	= wand_sd_speed_change,
-                .always_present		= 1,
-                .cd_type                = ESDHC_CD_PERMANENT,
+		.cd_gpio                = -EINVAL,
+		.wp_gpio                = -EINVAL,
+		.keep_power_at_suspend  = 1,
+		.support_8bit           = 0,
+		.always_present         = 1,
+		.platform_pad_change    = wand_sd_speed_change,
+		.cd_type                = ESDHC_CD_PERMANENT,
 	}, {
-		.cd_gpio		= WAND_SD3_CD,
-		.wp_gpio		= -EINVAL,
-		.keep_power_at_suspend	= 1,
-		.support_8bit		= 0,
-		.delay_line		= 0,
-		.platform_pad_change	= wand_sd_speed_change,
-                .cd_type                = ESDHC_CD_CONTROLLER,
+		.cd_gpio                = WAND_SD3_CD,
+		.wp_gpio                = -EINVAL,
+		.keep_power_at_suspend  = 1,
+		.support_8bit           = 0,
+		.delay_line             = 0,
+		.platform_pad_change    = wand_sd_speed_change,
+		.cd_type                = ESDHC_CD_CONTROLLER,
 	}
 };
 
 /* ------------------------------------------------------------------------ */
 
-static void wand_init_sd(void) {
+static __init void wand_init_sd(void)
+{
 	int i;
 	/* Card Detect for SD1 & SD3, respectively */
-	EDM_SET_PAD(PAD_GPIO_2__GPIO_1_2); 
+	EDM_SET_PAD(PAD_GPIO_2__GPIO_1_2);
 	EDM_SET_PAD(PAD_EIM_DA9__GPIO_3_9);
 	EDM_SET_PAD(PAD_KEY_ROW4__GPIO_4_15);
 
-	/* Add mmc devices in reverse order, so mmc0 always is boot sd (SD3) */
-	for (i=2; i>=0; i--) {
-		wand_mux_pads_init_sdmmc(i,50);
-                imx6q_add_sdhci_usdhc_imx(i, &wand_sd_data[i]);
+	if (fs_in_sdcard == 1) {
+		for (i = 0; i <= 2; i++) {
+			wand_mux_pads_init_sdmmc(i, 50);
+			imx6q_add_sdhci_usdhc_imx(i, &wand_sd_data[i]);
+		}
+	} else {
+		for (i = 2; i >= 0; i--) {
+			wand_mux_pads_init_sdmmc(i, 50);
+			imx6q_add_sdhci_usdhc_imx(i, &wand_sd_data[i]);
+		}
 	}
 }
 
@@ -172,12 +164,13 @@ static struct imxi2c_platform_data wand_i2c_data[] = {
 
 /* ------------------------------------------------------------------------ */
 
-static void __init wand_init_i2c(void) {
-        int i;
-	for (i=0; i<3; i++) {
+static void __init wand_init_i2c(void)
+{
+	int i;
+	for (i = 0; i < 3; i++) {
 		wand_mux_pads_init_i2c(i);
 		imx6q_add_imx_i2c(i, &wand_i2c_data[i]);
-        }
+	}
 }
 
 
@@ -188,15 +181,15 @@ static void __init wand_init_i2c(void) {
  ****************************************************************************/
 
 static const struct imxuart_platform_data wand_external_uart_data = {
-	.flags = IMXUART_HAVE_RTSCTS,
+	.flags      = IMXUART_HAVE_RTSCTS,
 	.dma_req_tx = MX6Q_DMA_REQ_UART2_TX,
 	.dma_req_rx = MX6Q_DMA_REQ_UART2_RX,
 };
 
 /* ------------------------------------------------------------------------ */
 
-static __init void wand_init_uart(void) {
-
+static __init void wand_init_uart(void)
+{
 	wand_mux_pads_init_uart();
 
 	imx6q_add_imx_uart(0, NULL);
@@ -214,7 +207,8 @@ static __init void wand_init_uart(void) {
 extern struct mxc_audio_platform_data wand_audio_channel_data;
 
 /* This function is called as a callback from the audio channel data struct */
-static int wand_audio_clock_enable(void) {
+static int wand_audio_clock_enable(void)
+{
 	struct clk *clko;
 	struct clk *new_parent;
 	int rate;
@@ -235,7 +229,7 @@ static int wand_audio_clock_enable(void) {
 		return -1;
 	}
 
-        wand_audio_channel_data.sysclk = rate;
+	wand_audio_channel_data.sysclk = rate;
 	clk_set_rate(clko, rate);
 	clk_enable(clko);
         
@@ -246,17 +240,18 @@ static int wand_audio_clock_enable(void) {
 
 /* This struct is added by the baseboard when initializing the codec */
 struct mxc_audio_platform_data wand_audio_channel_data = {
-	.ssi_num = 1,
-	.src_port = 2,
-	.ext_port = 3, /* audio channel: 3=AUD3. TODO: EDM */
-	.init = wand_audio_clock_enable,
-	.hp_gpio = -1,
+	.ssi_num    = 1,
+	.src_port   = 2,
+	.ext_port   = 3, /* audio channel: 3=AUD3. TODO: EDM */
+	.init       = wand_audio_clock_enable,
+	.hp_gpio    = -1,
 };
 EXPORT_SYMBOL_GPL(wand_audio_channel_data); /* TODO: edm naming? */
 
 /* ------------------------------------------------------------------------ */
 
-static int wand_set_spdif_clk_rate(struct clk *clk, unsigned long rate) {
+static int wand_set_spdif_clk_rate(struct clk *clk, unsigned long rate)
+{
 	unsigned long rate_actual;
 	rate_actual = clk_round_rate(clk, rate);
 	clk_set_rate(clk, rate_actual);
@@ -266,16 +261,16 @@ static int wand_set_spdif_clk_rate(struct clk *clk, unsigned long rate) {
 /* ------------------------------------------------------------------------ */
 
 static struct mxc_spdif_platform_data wand_spdif = {
-	.spdif_tx		= 1,	/* enable tx */
-	.spdif_rx		= 1,	/* enable rx */
-	.spdif_clk_44100	= 1,    /* tx clk from spdif0_clk_root */
-	.spdif_clk_48000	= 1,    /* tx clk from spdif0_clk_root */
-	.spdif_div_44100	= 23,
-	.spdif_div_48000	= 37,
-	.spdif_div_32000	= 37,
-	.spdif_rx_clk		= 0,    /* rx clk from spdif stream */
-	.spdif_clk_set_rate	= wand_set_spdif_clk_rate,
-	.spdif_clk		= NULL, /* spdif bus clk */
+	.spdif_tx           = 1,	/* enable tx */
+	.spdif_rx           = 1,	/* enable rx */
+	.spdif_clk_44100    = 1,    /* tx clk from spdif0_clk_root */
+	.spdif_clk_48000    = 1,    /* tx clk from spdif0_clk_root */
+	.spdif_div_44100    = 23,
+	.spdif_div_48000    = 37,
+	.spdif_div_32000    = 37,
+	.spdif_rx_clk       = 0,    /* rx clk from spdif stream */
+	.spdif_clk_set_rate = wand_set_spdif_clk_rate,
+	.spdif_clk          = NULL, /* spdif bus clk */
 };
 
 /* ------------------------------------------------------------------------ */
@@ -293,13 +288,13 @@ static struct imx_asrc_platform_data wand_asrc_data = {
 
 /* ------------------------------------------------------------------------ */
 
-void __init wand_init_audio(void) {
-        
+void __init wand_init_audio(void)
+{
 	wand_mux_pads_init_audio();
 
-        /* Sample rate converter is added together with audio */
-        wand_asrc_data.asrc_core_clk = clk_get(NULL, "asrc_clk");
-        wand_asrc_data.asrc_audio_clk = clk_get(NULL, "asrc_serial_clk");
+	/* Sample rate converter is added together with audio */
+	wand_asrc_data.asrc_core_clk = clk_get(NULL, "asrc_clk");
+	wand_asrc_data.asrc_audio_clk = clk_get(NULL, "asrc_serial_clk");
 	imx6q_add_asrc(&wand_asrc_data);
 
 	imx6q_add_imx_ssi(1, &wand_ssi_pdata);
@@ -320,10 +315,11 @@ void __init wand_init_audio(void) {
  * Init FEC and AR8031 PHY
  *                                                                            
  *****************************************************************************/
+#define WAND_RGMII_INT		IMX_GPIO_NR(1, 28)
+#define WAND_RGMII_RST		IMX_GPIO_NR(3, 29)
 
-/* ------------------------------------------------------------------------ */
-
-static int wand_fec_phy_init(struct phy_device *phydev) {
+static int wand_fec_phy_init(struct phy_device *phydev)
+{
 	unsigned short val;
 
 	/* Ar8031 phy SmartEEE feature cause link status generates glitch,
@@ -364,14 +360,14 @@ static int wand_fec_phy_init(struct phy_device *phydev) {
 /* ------------------------------------------------------------------------ */
 
 static struct fec_platform_data wand_fec_data = {
-	.init			= wand_fec_phy_init,
-	.phy			= PHY_INTERFACE_MODE_RGMII,
+	.init   = wand_fec_phy_init,
+	.phy    = PHY_INTERFACE_MODE_RGMII,
 };
 
 /* ------------------------------------------------------------------------ */
 
-static __init void wand_init_ethernet(void) {
-
+static __init void wand_init_ethernet(void)
+{
 	wand_mux_pads_init_ethernet();
 
 	gpio_request(WAND_RGMII_RST, "rgmii reset");
@@ -390,256 +386,477 @@ static __init void wand_init_ethernet(void) {
  * USB
  *                                                                          
  ****************************************************************************/
+#define WAND_USB_OTG_OC		IMX_GPIO_NR(1, 9)
+#define WAND_USB_OTG_PWR	IMX_GPIO_NR(3, 22)
+#define WAND_USB_H1_OC		IMX_GPIO_NR(3, 30)
 
-
-/* ------------------------------------------------------------------------ */
-
-static void wand_usbotg_vbus(bool on) {
-        gpio_set_value_cansleep(WAND_USB_OTG_PWR, !on);
+static void wand_usbotg_vbus(bool on)
+{
+	gpio_set_value_cansleep(WAND_USB_OTG_PWR, !on);
 }
 
 /* ------------------------------------------------------------------------ */
 
-static __init void wand_init_usb(void) {
-        
+static __init void wand_init_usb(void)
+{
 	wand_mux_pads_init_usb();
 
-        gpio_request(WAND_USB_OTG_OC, "otg oc");
+	gpio_request(WAND_USB_OTG_OC, "otg oc");
 	gpio_direction_input(WAND_USB_OTG_OC);
 
-        gpio_request(WAND_USB_OTG_PWR, "otg pwr");
-        gpio_direction_output(WAND_USB_OTG_PWR, 0);
+	gpio_request(WAND_USB_OTG_PWR, "otg pwr");
+	gpio_direction_output(WAND_USB_OTG_PWR, 0);
 
 	imx_otg_base = MX6_IO_ADDRESS(MX6Q_USB_OTG_BASE_ADDR);
 	mxc_iomux_set_gpr_register(1, 13, 1, 1);
 
 	mx6_set_otghost_vbus_func(wand_usbotg_vbus);
 
-        gpio_request(WAND_USB_H1_OC, "usbh1 oc");
+	gpio_request(WAND_USB_H1_OC, "usbh1 oc");
 	gpio_direction_input(WAND_USB_H1_OC);
 }
 
 /****************************************************************************
  *                                                                          
- * CORE DISPLAY
+ * IPU
  *                                                                          
  ****************************************************************************/
 
-/* HDMI------------------------------------------------------------------------ */
-
-#include <linux/mfd/mxc-hdmi-core.h>
-
-static void wand_hdmi_dev_init(int ipu_id, int disp_id) {
-	if ((unsigned)ipu_id > 1) ipu_id = 0;
-	if ((unsigned)disp_id > 1) disp_id = 0;
-
-	mxc_iomux_set_gpr_register(3, 2, 2, 2*ipu_id + disp_id);
-
-	/* Set HDMI event as SDMA event2 while Chip version later than TO1.2 */
-	if (hdmi_SDMA_check())
-		mxc_iomux_set_gpr_register(0, 0, 1, 1);
-}
-
-/* ------------------------------------------------------------------------ */
-
-static struct fsl_mxc_hdmi_platform_data wand_hdmi_data = {
-	.init = wand_hdmi_dev_init,
-};
-
-/* ------------------------------------------------------------------------ */
-
-static struct fsl_mxc_hdmi_core_platform_data wand_hdmi_core_data = {
-	.ipu_id		= 1,
-	.disp_id	= 0,
-};
-
-/* ------------------------------------------------------------------------ */
-
-static const struct i2c_board_info wand_hdmi_i2c_info = {
-	I2C_BOARD_INFO("mxc_hdmi_i2c", 0x50),
-};
-
-static void wand_init_display_hdmi(void) {
-
-	i2c_register_board_info(0, &wand_hdmi_i2c_info, 1);
-
-	imx6q_add_mxc_hdmi_core(&wand_hdmi_core_data);
-	imx6q_add_mxc_hdmi(&wand_hdmi_data);
-        /* Enable HDMI audio */
-	imx6q_add_hdmi_soc();
-	imx6q_add_hdmi_soc_dai();        
-//	mxc_iomux_set_gpr_register(0, 0, 1, 1);
-}
-
-/* ------------------------------------------------------------------------ */
-
-/*******LVDS*************/
-static struct fsl_mxc_ldb_platform_data wand_ldb_data = {
-	.ipu_id = 0,
-	.disp_id = 1,
-	.ext_ref = 1,
-	.mode = LDB_DUL_DI1,//LDB_SEP1,
-	.sec_ipu_id = 0,
-	.sec_disp_id = 0,
-};
-
-static void wand_init_display_lvds(void) {
-	wand_mux_pads_init_lvds();
-
-        gpio_request(IMX_GPIO_NR(2, 8), "lvds0_en");
-        gpio_direction_output(IMX_GPIO_NR(2, 8), 1);
-
-        gpio_request(IMX_GPIO_NR(2, 9), "lvds0_blt_ctrl");
-        gpio_direction_output(IMX_GPIO_NR(2, 9), 1);
-
-        gpio_request(IMX_GPIO_NR(2, 10), "disp0_bklen");
-        gpio_direction_output(IMX_GPIO_NR(2, 10), 1);
-
-        gpio_request(IMX_GPIO_NR(2, 11), "disp0_vdden");
-        gpio_direction_output(IMX_GPIO_NR(2, 11), 1);
-
-	imx6q_add_ldb(&wand_ldb_data);
-}
-
-/****************************/
-
-static struct fsl_mxc_lcd_platform_data wand_lcdif_data = {
-	.ipu_id = 0,
-	.disp_id = 0,
-	.default_ifmt = IPU_PIX_FMT_RGB565,
-};
-
-static void wand_init_display_lcdif(void) {
-	if ((wand_lcdif_data.ipu_id > 1) || (!cpu_is_mx6q()))
-		wand_lcdif_data.ipu_id = 0;
-
-	if (wand_lcdif_data.ipu_id == 0)
-		wand_mux_pads_init_lcdif();
-	else
-		wand_mux_pads_init_ipu2_lcdif();
-
-	imx6q_add_lcdif(&wand_lcdif_data);
-
-}
-/**************************/
-
-static struct ipuv3_fb_platform_data wand_fb_pdata[] = {
-	{ /*fb0*/
-	.disp_dev = "ldb",
-	.interface_pix_fmt = IPU_PIX_FMT_RGB666,
-	.mode_str = "LDB-XGA",
-	.default_bpp = 16,
-	.int_clk = false,
-	.late_init = false,
-	}, {
-	.disp_dev = "hdmi",
-	.interface_pix_fmt = IPU_PIX_FMT_RGB24,
-	.mode_str = "1920x1080M@60",
-	.default_bpp = 32,
-	.int_clk = false,
-	.late_init = false,
-	}, {
-	.disp_dev = "ldb",
-	.interface_pix_fmt = IPU_PIX_FMT_RGB666,
-	.mode_str = "LDB-XGA",
-	.default_bpp = 16,
-	.int_clk = false,
-	.late_init = false,
-	},
-};
-
 static struct imx_ipuv3_platform_data wand_ipu_data[] = {
 	{
-		.rev = 4,
-		.csi_clk[0] = "clko_clk",
-		.bypass_reset = false,
+		.rev            = 4,
+		.csi_clk[0]     = "clko_clk",
+		.bypass_reset   = false,
 	}, {
-		.rev = 4,
-		.csi_clk[0] = "clko_clk",
-		.bypass_reset = false,
+		.rev            = 4,
+		.csi_clk[0]     = "clko_clk",
+		.bypass_reset   = false,
 	},
 };
 
-static __init void wand_init_ipu(void) {
-	int i;
-
+static __init void wand_init_ipu(void)
+{
 	imx6q_add_ipuv3(0, &wand_ipu_data[0]);
-
-	if (cpu_is_mx6q()) {
+	if (cpu_is_mx6q())
 		imx6q_add_ipuv3(1, &wand_ipu_data[1]);
-		for (i = 0; i < 4 && i < ARRAY_SIZE(wand_fb_pdata); i++)
-			imx6q_add_ipuv3fb(i, &wand_fb_pdata[i]);
-	} else
-		for (i = 0; i < 2 && i < ARRAY_SIZE(wand_fb_pdata); i++)
-			imx6q_add_ipuv3fb(i, &wand_fb_pdata[i]);
-
-	if (cpu_is_mx6dl()) {
-		wand_lcdif_data.ipu_id = 0;
-		wand_lcdif_data.disp_id = 0;
-		wand_ldb_data.ipu_id = 0;
-		wand_ldb_data.disp_id = 0;
-		wand_ldb_data.mode = LDB_SIN0;
-		wand_hdmi_core_data.ipu_id = 0;
-		wand_hdmi_core_data.disp_id = 1;
-	}
-	imx6q_add_vdoa();
-}
-
-static void wand_init_display(void) {
-	wand_init_display_hdmi();
-	wand_init_display_lvds();
-	wand_init_display_lcdif();
 }
 
 /****************************************************************************
  *                                                                          
- * LCD Backlight Control
+ * MX6 DISPLAY CONTROL FRAMEWORK
  *                                                                          
  ****************************************************************************/
-#include <linux/pwm_backlight.h>
 
-static struct platform_pwm_backlight_data wand_pwm_backlight_data = {
-	.pwm_id = 2,
+#include "mx6_display.h"
+
+static void wand_display0_control(int onoff)
+{
+	if (onoff) {
+		gpio_direction_output(IMX_GPIO_NR(2, 8), 1);
+		gpio_direction_output(IMX_GPIO_NR(2, 9), 1);
+	} else {
+		gpio_direction_output(IMX_GPIO_NR(2, 8), 0);
+		gpio_direction_output(IMX_GPIO_NR(2, 9), 0);
+	}
+
+}
+static void wand_display1_control(int onoff)
+{
+	if (onoff) {
+		gpio_direction_output(IMX_GPIO_NR(2, 10), 1);
+		gpio_direction_output(IMX_GPIO_NR(2, 11), 1);
+	} else {
+		gpio_direction_output(IMX_GPIO_NR(2, 10), 0);
+		gpio_direction_output(IMX_GPIO_NR(2, 11), 0);
+	}
+}
+
+
+static void wand_init_display(void)
+{
+	EDM_SET_PAD(PAD_SD4_DAT0__GPIO_2_8);
+	EDM_SET_PAD(PAD_SD4_DAT1__GPIO_2_9);
+	EDM_SET_PAD(PAD_SD4_DAT2__GPIO_2_10);
+	EDM_SET_PAD(PAD_SD4_DAT3__GPIO_2_11);
+
+	gpio_request(IMX_GPIO_NR(2, 8), "lvds0_en");
+	gpio_request(IMX_GPIO_NR(2, 9), "lvds0_blt_ctrl");
+
+	gpio_request(IMX_GPIO_NR(2, 10), "disp0_bklen");
+	gpio_request(IMX_GPIO_NR(2, 11), "disp0_vdden");
+
+	mx6_disp_ctrls = kmalloc(sizeof(struct mx6_display_controls), GFP_KERNEL);
+	if (mx6_disp_ctrls != NULL) {
+		mx6_disp_ctrls->hdmi_enable     = NULL;
+		mx6_disp_ctrls->lvds0_enable    = wand_display0_control;
+		mx6_disp_ctrls->lvds1_enable    = NULL;
+		mx6_disp_ctrls->lcd0_enable     = wand_display1_control;
+		mx6_disp_ctrls->lcd1_enable     = NULL;
+		mx6_disp_ctrls->dsi_enable      = NULL;
+		mx6_disp_ctrls->hdmi_pads       = NULL;
+		mx6_disp_ctrls->lvds0_pads      = wand_mux_pads_init_lvds;
+		mx6_disp_ctrls->lvds1_pads      = NULL;
+		mx6_disp_ctrls->lcd0_ipu1_pads  = wand_mux_pads_init_ipu1_lcd0;
+		mx6_disp_ctrls->lcd0_ipu2_pads  = wand_mux_pads_init_ipu2_lcd0;
+		mx6_disp_ctrls->lcd1_ipu1_pads  = NULL;
+		mx6_disp_ctrls->lcd1_ipu2_pads  = NULL;
+		mx6_disp_ctrls->dsi_pads        = NULL;
+		mx6_disp_ctrls->hdmi_ddc_pads_enable    = NULL;
+		mx6_disp_ctrls->hdmi_ddc_pads_disable   = NULL;
+	#if defined(CONFIG_EDM)
+		mx6_disp_ctrls->hdmi_i2c        = edm_ddc;
+	#else
+		mx6_disp_ctrls->hdmi_i2c        = 0;
+	#endif
+		mx6_disp_ctrls->hdcp_enable     = 0;
+		mx6_disp_ctrls->lvds0_i2c       = -EINVAL;
+		mx6_disp_ctrls->lvds1_i2c       = -EINVAL;
+		mx6_disp_ctrls->lcd0_i2c        = -EINVAL;
+		mx6_disp_ctrls->lcd1_i2c        = -EINVAL;
+		mx6_disp_ctrls->dsi_i2c         = -EINVAL;
+	}
+
+	/* LCD0, LCD1, HDMI0, LVDS0, LVDS1, LVDSD, DSI0 */
+	mx6_display_ch_capability_setup(1, 0, 1, 1, 0, 0, 1);
+	mx6_init_display();
+}
+
+/****************************************************************************
+ *
+ * LCD Backlight Control
+ *
+ ****************************************************************************/
+#include <linux/pwm_backlight.h>
+#if defined(CONFIG_BACKLIGHT_PWM) && defined(CONFIG_MXC_PWM)
+static struct platform_pwm_backlight_data wand_disp0_pwm_bklight_data = {
+	.pwm_id         = 2,
 	.max_brightness = 248,
 	.dft_brightness = 248,
-	.pwm_period_ns = 50000,
+	.pwm_period_ns  = 50000,
 };
 
-static void wand_init_lcd_backlight(void)
+static struct platform_pwm_backlight_data wand_disp1_pwm_bklight_data = {
+	.pwm_id         = 3,
+	.max_brightness = 248,
+	.dft_brightness = 248,
+	.pwm_period_ns  = 50000,
+};
+
+static __init void wand_init_lcd_backlight(void)
 {
-	EDM_SET_PAD( PAD_SD4_DAT1__PWM3_PWMO );
+	EDM_SET_PAD(PAD_SD4_DAT1__PWM3_PWMO);
+	EDM_SET_PAD(PAD_SD4_DAT2__PWM4_PWMO);
 	imx6q_add_mxc_pwm(2);
-	imx6q_add_mxc_pwm_backlight(2, &wand_pwm_backlight_data);
+	imx6q_add_mxc_pwm(3);
+	imx6q_add_mxc_pwm_backlight(2, &wand_disp0_pwm_bklight_data);
+	imx6q_add_mxc_pwm_backlight(3, &wand_disp1_pwm_bklight_data);
+}
+#else
+static inline void wand_init_lcd_backlight(void) { ; }
+#endif
+
+/* ------------------------------------------------------------------------ */
+
+
+/****************************************************************************
+ *                                                                          
+ * WiFi
+ *                                                                          
+ ****************************************************************************/
+#define WAND_WL_REF_ON		IMX_GPIO_NR(2, 29)
+#define WAND_WL_RST_N		IMX_GPIO_NR(5, 2)
+#define WAND_WL_REG_ON		IMX_GPIO_NR(1, 26)
+#define WAND_WL_HOST_WAKE	IMX_GPIO_NR(1, 29)
+#define WAND_WL_WAKE		IMX_GPIO_NR(1, 30)
+
+/* assumes SD/MMC pins are set; call after wand_init_sd() */
+static __init void wand_init_wifi(void)
+{
+	wand_mux_pads_init_wifi();
+                
+	gpio_request(WAND_WL_RST_N, "wl_rst_n");
+	gpio_direction_output(WAND_WL_RST_N, 0);
+	msleep(11);
+	gpio_set_value(WAND_WL_RST_N, 1);
+
+	gpio_request(WAND_WL_REF_ON, "wl_ref_on");
+	gpio_direction_output(WAND_WL_REF_ON, 1);
+
+	gpio_request(WAND_WL_REG_ON, "wl_reg_on");
+	gpio_direction_output(WAND_WL_REG_ON, 1);
+        
+	gpio_request(WAND_WL_WAKE, "wl_wake");
+	gpio_direction_output(WAND_WL_WAKE, 1);
+
+	gpio_request(WAND_WL_HOST_WAKE, "wl_host_wake");
+	gpio_direction_input(WAND_WL_HOST_WAKE);
+}
+
+
+/****************************************************************************
+ *                                                                          
+ * Bluetooth
+ *                                                                          
+ ****************************************************************************/
+#define WAND_BT_ON		IMX_GPIO_NR(3, 13)
+#define WAND_BT_WAKE		IMX_GPIO_NR(3, 14)
+#define WAND_BT_HOST_WAKE	IMX_GPIO_NR(3, 15)
+/* ------------------------------------------------------------------------ */
+#include <mach/imx_rfkill.h>
+
+static int wandboard_bt_power_change(int status)
+{
+	if (status) {
+		printk(KERN_INFO "wandboard_bt_on\n");
+		gpio_set_value(WAND_BT_ON, 1);
+		msleep(100);
+	} else {
+		printk(KERN_INFO "wandboard_bt_off\n");
+		gpio_direction_output(WAND_BT_ON, 0);
+		msleep(11);
+	}
+	return 0;
+}
+
+static struct platform_device wandboard_bt_rfkill = {
+	.name = "mxc_bt_rfkill",
+};
+
+static struct imx_bt_rfkill_platform_data wandboard_bt_rfkill_data = {
+	.power_change = wandboard_bt_power_change,
+};
+
+static const struct imxuart_platform_data wand_bt_uart_data = {
+	.flags = IMXUART_HAVE_RTSCTS,
+	.dma_req_tx = MX6Q_DMA_REQ_UART3_TX,
+	.dma_req_rx = MX6Q_DMA_REQ_UART3_RX,
+};
+
+/* ------------------------------------------------------------------------ */
+
+/* This assumes wifi is initialized (chip has power) */
+static __init void wand_init_bluetooth(void)
+{
+	wand_mux_pads_init_bluetooth();
+
+	imx6q_add_imx_uart(2, &wand_bt_uart_data);
+
+	mxc_register_device(&wandboard_bt_rfkill, &wandboard_bt_rfkill_data);
+
+	gpio_request(WAND_BT_ON, "bt_on");
+	gpio_direction_output(WAND_BT_ON, 0);
+	msleep(11);
+	gpio_set_value(WAND_BT_ON, 1);
+
+	gpio_request(WAND_BT_WAKE, "bt_wake");
+	gpio_direction_output(WAND_BT_WAKE, 1);
+
+	gpio_request(WAND_BT_HOST_WAKE, "bt_host_wake");
+	gpio_direction_input(WAND_BT_WAKE);
+}
+
+
+/****************************************************************************
+ *                                                                          
+ * Power and thermal management
+ *                                                                          
+ ****************************************************************************/
+
+extern bool enable_wait_mode;
+
+static const struct anatop_thermal_platform_data wand_thermal = {
+	.name = "anatop_thermal",
+};
+
+/* ------------------------------------------------------------------------ */
+
+static void wand_suspend_enter(void)
+{
+	gpio_set_value(WAND_WL_WAKE, 0);
+	gpio_set_value(WAND_BT_WAKE, 0);
 }
 
 /* ------------------------------------------------------------------------ */
 
+static void wand_suspend_exit(void)
+{
+	gpio_set_value(WAND_WL_WAKE, 1);
+	gpio_set_value(WAND_BT_WAKE, 1);
+}
+
+/* ------------------------------------------------------------------------ */
+
+static const struct pm_platform_data wand_pm_data = {
+	.name		= "imx_pm",
+	.suspend_enter	= wand_suspend_enter,
+	.suspend_exit	= wand_suspend_exit,
+};
+
+/* ------------------------------------------------------------------------ */
+
+static const struct mxc_dvfs_platform_data wand_dvfscore_data = {
+	.clk1_id		= "cpu_clk",
+	.clk2_id 		= "gpc_dvfs_clk",
+	.gpc_cntr_offset 	= MXC_GPC_CNTR_OFFSET,
+	.ccm_cdcr_offset 	= MXC_CCM_CDCR_OFFSET,
+	.ccm_cacrr_offset 	= MXC_CCM_CACRR_OFFSET,
+	.ccm_cdhipr_offset 	= MXC_CCM_CDHIPR_OFFSET,
+	.prediv_mask 		= 0x1F800,
+	.prediv_offset 		= 11,
+	.prediv_val 		= 3,
+	.div3ck_mask 		= 0xE0000000,
+	.div3ck_offset 		= 29,
+	.div3ck_val 		= 2,
+	.emac_val 		= 0x08,
+	.upthr_val 		= 25,
+	.dnthr_val 		= 9,
+	.pncthr_val 		= 33,
+	.upcnt_val 		= 10,
+	.dncnt_val 		= 10,
+	.delay_time 		= 80,
+};
+
+/* ------------------------------------------------------------------------ */
+
+static void wand_poweroff(void)
+{
+	void __iomem *snvs_lpcr = MX6_IO_ADDRESS(MX6Q_SNVS_BASE_ADDR) + 0x38;
+	u32 old_lpcr = readl(snvs_lpcr);
+	writel(old_lpcr | 0x60, snvs_lpcr);
+}
+
+static __init void wand_init_pm(void)
+{
+	enable_wait_mode = false;
+	imx6q_add_anatop_thermal_imx(1, &wand_thermal);
+	imx6q_add_pm_imx(0, &wand_pm_data);
+	imx6q_add_dvfs_core(&wand_dvfscore_data);
+	imx6q_add_busfreq();
+	pm_power_off = wand_poweroff;
+}
+
+
+/****************************************************************************
+ *                                                                          
+ * Expansion pin header GPIOs
+ *                                                                          
+ ****************************************************************************/
+
+static __init void wand_init_external_gpios(void)
+{
+#if defined(CONFIG_EDM)
+	/* GPIO export and setup is in EDM framework, see drivers/edm/edm.c */
+	wand_mux_pads_init_external_gpios();
+#endif
+}
+
+
+/****************************************************************************
+ *
+ * SPI - while not used on the Wandboard, the pins are routed to baseboard
+ *
+ ****************************************************************************/
+
+static const int wand_spi1_chipselect[] = { IMX_GPIO_NR(2, 30) };
+
+/* platform device */
+static const struct spi_imx_master wand_spi1_data = {
+	.chipselect     = (int *)wand_spi1_chipselect,
+	.num_chipselect = ARRAY_SIZE(wand_spi1_chipselect),
+};
+
+/* ------------------------------------------------------------------------ */
+
+static const int wand_spi2_chipselect[] = { IMX_GPIO_NR(2, 26), IMX_GPIO_NR(2, 27) };
+
+static const struct spi_imx_master wand_spi2_data = {
+	.chipselect     = (int *)wand_spi2_chipselect,
+	.num_chipselect = ARRAY_SIZE(wand_spi2_chipselect),
+};
+
+/* ------------------------------------------------------------------------ */
+
+static void __init wand_init_spi(void)
+{
+	wand_mux_pads_init_spi();
+
+	imx6q_add_ecspi(0, &wand_spi1_data);
+	imx6q_add_ecspi(1, &wand_spi2_data);
+}
+
+/****************************************************************************
+ *                                                                          
+ * Vivante GPU/VPU
+ *                                                                          
+ ****************************************************************************/
+
+static struct viv_gpu_platform_data wand_gpu_pdata = {
+	.reserved_mem_size = SZ_128M + SZ_64M - SZ_16M,
+};
+
+static __init void wand_init_gpu(void)
+{
+	imx_add_viv_gpu(&imx6_gpu_data, &wand_gpu_pdata);
+	imx6q_add_vpu();
+	imx6q_add_v4l2_output(0);
+}
+
 /*****************************************************************************
- *                                                                            
- * PCI Express (not present on default baseboard, but is routed to connector)
- *                                                                            
+ *
+ * PCI Express
+ *
  *****************************************************************************/
 
 #define WAND_PCIE_NRST		IMX_GPIO_NR(3, 31)
 
 static const struct imx_pcie_platform_data wand_pcie_data = {
 	.pcie_pwr_en	= -EINVAL,
-	.pcie_rst	= WAND_PCIE_NRST,
+	.pcie_rst		= WAND_PCIE_NRST,
 	.pcie_wake_up	= -EINVAL,
-	.pcie_dis	= -EINVAL,
+	.pcie_dis		= -EINVAL,
+#ifdef CONFIG_IMX_PCIE_EP_MODE_IN_EP_RC_SYS
+	.type_ep        = 1,
+#else
+	.type_ep        = 0,
+#endif
+	.pcie_power_always_on = 1,
 };
 
 /* ------------------------------------------------------------------------ */
 
-static void __init wand_init_pcie(void) {
-	EDM_SET_PAD( PAD_EIM_D31__GPIO_3_31);
+static void __init wand_init_pcie(void)
+{
+	EDM_SET_PAD(PAD_EIM_D31__GPIO_3_31);
 	imx6q_add_pcie(&wand_pcie_data);
 }
 
 /****************************************************************************
- *                                                                          
+ *
+ * CAAM - I.MX6 Cryptographic Acceleration
+ *
+ ****************************************************************************/
+
+static int caam_enabled;
+
+static int __init caam_setup(char *__unused)
+{
+	caam_enabled = 1;
+	return 1;
+}
+early_param("caam", caam_setup);
+
+static void __init wand_init_caam(void)
+{
+	if (caam_enabled) {
+		pr_info("CAAM loading\n");
+		imx6q_add_imx_caam();
+	}
+}
+
+/****************************************************************************
+ *
  * AHCI - SATA
- *                                                                          
+ *
  ****************************************************************************/
 
 #if defined(CONFIG_IMX_HAVE_PLATFORM_AHCI)
@@ -680,11 +897,12 @@ static int wand_sata_init(struct device *dev, void __iomem *addr)
 	 *.tx_edgerate_0(iomuxc_gpr13[0]),
 	 */
 	tmpdata = readl(IOMUXC_GPR13);
-	writel(((tmpdata & ~0x07FFFFFD) | 0x0593A044), IOMUXC_GPR13);
+	writel(tmpdata & ~0x2, IOMUXC_GPR13);
+	writel(((tmpdata & ~0x07FFFFFF) | 0x0593A046), IOMUXC_GPR13);
 
-	/* enable SATA_PHY PLL */
-	tmpdata = readl(IOMUXC_GPR13);
-	writel(((tmpdata & ~0x2) | 0x2), IOMUXC_GPR13);
+	sata_phy_cr_addr(0x7F3F, addr);
+	sata_phy_cr_write(0x1, addr);
+	sata_phy_cr_read(&tmpdata, addr);
 
 	/* Get the AHB clock rate, and configure the TIMER1MS reg later */
 	clk = clk_get(NULL, "ahb");
@@ -745,259 +963,39 @@ static __init void wand_init_ahci(void)
 
 }
 
-#else
+#else /* defined(CONFIG_IMX_HAVE_PLATFORM_AHCI) */
 
-static inline void wand_init_ahci(void) { ;}
-#endif
+static inline void wand_init_ahci(void) { ; }
 
-/****************************************************************************
- *                                                                          
- * WiFi
- *                                                                          
- ****************************************************************************/
+#endif /* defined(CONFIG_IMX_HAVE_PLATFORM_AHCI) */
 
+/*****************************************************************************
+ *
+ * Init EDM framework
+ *
+ *****************************************************************************/
 
-/* ------------------------------------------------------------------------ */
-
-/* assumes SD/MMC pins are set; call after wand_init_sd() */
-static __init void wand_init_wifi(void) {
-
-	wand_mux_pads_init_wifi();
-                
-	gpio_request(WAND_WL_RST_N, "wl_rst_n");
-	gpio_direction_output(WAND_WL_RST_N, 0);
-	msleep(11);
-	gpio_set_value(WAND_WL_RST_N, 1);
-
-	gpio_request(WAND_WL_REF_ON, "wl_ref_on");
-	gpio_direction_output(WAND_WL_REF_ON, 1);
-
-	gpio_request(WAND_WL_REG_ON, "wl_reg_on");
-	gpio_direction_output(WAND_WL_REG_ON, 1);
-        
-	gpio_request(WAND_WL_WAKE, "wl_wake");
-	gpio_direction_output(WAND_WL_WAKE, 1);
-
-	gpio_request(WAND_WL_HOST_WAKE, "wl_host_wake");
-	gpio_direction_input(WAND_WL_HOST_WAKE);
-}
-
-
-/****************************************************************************
- *                                                                          
- * Bluetooth
- *                                                                          
- ****************************************************************************/
-
-
-/* ------------------------------------------------------------------------ */
-#include <mach/imx_rfkill.h>
-
-static int wandboard_bt_power_change(int status)
+#if defined(CONFIG_EDM)
+static void __init wand_init_edm(void)
 {
-	if(status){
-		printk(KERN_INFO "wandboard_bt_on\n");
-		gpio_set_value(WAND_BT_ON, 1);
-		msleep(100);
-	}
-	else{
-		printk(KERN_INFO "wandboard_bt_off\n");
-		gpio_direction_output(WAND_BT_ON, 0);
-		msleep(11);
-	}
-	return 0;
+	/* Associate Wandboard Specific to EDM Structure*/
+	wand_external_gpios_to_edm_gpios();
+
+	edm_i2c[0] = 0;
+	edm_i2c[1] = 1;
+	edm_i2c[2] = 2;
+
+	edm_ddc = 0;
+
+	edm_spi[0] = 0;
+	edm_spi[1] = 1;
+
+	edm_audio_data[0].enabled = true;
+	edm_audio_data[0].platform_data = &wand_audio_channel_data;
 }
-
-static struct platform_device wandboard_bt_rfkill = {
-	.name = "mxc_bt_rfkill",
-};
-
-static struct imx_bt_rfkill_platform_data wandboard_bt_rfkill_data = {
-	.power_change = wandboard_bt_power_change,
-};
-
-
-static const struct imxuart_platform_data wand_bt_uart_data = {
-	.flags = IMXUART_HAVE_RTSCTS,
-	.dma_req_tx = MX6Q_DMA_REQ_UART3_TX,
-	.dma_req_rx = MX6Q_DMA_REQ_UART3_RX,
-};
-
-/* ------------------------------------------------------------------------ */
-
-/* This assumes wifi is initialized (chip has power) */
-static __init void wand_init_bluetooth(void) {
-
-	wand_mux_pads_init_bluetooth();
-
-	imx6q_add_imx_uart(2, &wand_bt_uart_data);
-
-	mxc_register_device(&wandboard_bt_rfkill, &wandboard_bt_rfkill_data);
-
-	gpio_request(WAND_BT_ON, "bt_on");
-	gpio_direction_output(WAND_BT_ON, 0);
-	msleep(11);
-	gpio_set_value(WAND_BT_ON, 1);
-
-	gpio_request(WAND_BT_WAKE, "bt_wake");
-	gpio_direction_output(WAND_BT_WAKE, 1);
-
-	gpio_request(WAND_BT_HOST_WAKE, "bt_host_wake");
-	gpio_direction_input(WAND_BT_WAKE);
-}
-
-
-/****************************************************************************
- *                                                                          
- * Power and thermal management
- *                                                                          
- ****************************************************************************/
-
-extern bool enable_wait_mode;
-
-static const struct anatop_thermal_platform_data wand_thermal = {
-	.name = "anatop_thermal",
-};
-
-/* ------------------------------------------------------------------------ */
-
-static void wand_suspend_enter(void) {
-	gpio_set_value(WAND_WL_WAKE, 0);
-	gpio_set_value(WAND_BT_WAKE, 0);
-}
-
-/* ------------------------------------------------------------------------ */
-
-static void wand_suspend_exit(void) {
-	gpio_set_value(WAND_WL_WAKE, 1);
-	gpio_set_value(WAND_BT_WAKE, 1);
-}
-
-/* ------------------------------------------------------------------------ */
-
-static const struct pm_platform_data wand_pm_data = {
-	.name		= "imx_pm",
-	.suspend_enter	= wand_suspend_enter,
-	.suspend_exit	= wand_suspend_exit,
-};
-
-/* ------------------------------------------------------------------------ */
-
-static const struct mxc_dvfs_platform_data wand_dvfscore_data = {
-/*
-	.reg_id			= "VDDCORE",
-	.soc_id			= "VDDSOC",
-*/
-	.clk1_id		= "cpu_clk",
-	.clk2_id 		= "gpc_dvfs_clk",
-	.gpc_cntr_offset 	= MXC_GPC_CNTR_OFFSET,
-	.ccm_cdcr_offset 	= MXC_CCM_CDCR_OFFSET,
-	.ccm_cacrr_offset 	= MXC_CCM_CACRR_OFFSET,
-	.ccm_cdhipr_offset 	= MXC_CCM_CDHIPR_OFFSET,
-	.prediv_mask 		= 0x1F800,
-	.prediv_offset 		= 11,
-	.prediv_val 		= 3,
-	.div3ck_mask 		= 0xE0000000,
-	.div3ck_offset 		= 29,
-	.div3ck_val 		= 2,
-	.emac_val 		= 0x08,
-	.upthr_val 		= 25,
-	.dnthr_val 		= 9,
-	.pncthr_val 		= 33,
-	.upcnt_val 		= 10,
-	.dncnt_val 		= 10,
-	.delay_time 		= 80,
-};
-
-/* ------------------------------------------------------------------------ */
-
-static __init void wand_init_pm(void) {
-	enable_wait_mode = false;
-	imx6q_add_anatop_thermal_imx(1, &wand_thermal);
-	imx6q_add_pm_imx(0, &wand_pm_data);
-	imx6q_add_dvfs_core(&wand_dvfscore_data);
-	imx6q_add_busfreq();
-}
-
-
-/****************************************************************************
- *                                                                          
- * Expansion pin header GPIOs
- *                                                                          
- ****************************************************************************/
-
-
-/* ------------------------------------------------------------------------ */
-
-static __init void wand_init_external_gpios(void) {
-	int i;
-	char *name = "external_gpio_0";
-
-	wand_mux_pads_init_external_gpios();
-
-	for (i=0; i<EDM_N_EXTERNAL_GPIO; i++) {
-		name[14] = '0' + i;                
-		gpio_request(edm_external_gpio[i], name);
-		gpio_export(edm_external_gpio[i], true);
-	}
-}
-
-
-/****************************************************************************
- *                                                                          
- * SPI - while not used on the Wandboard, the pins are routed out
- *                                                                          
- ****************************************************************************/
-
-/* The choice of using gpios for chipselect is deliberate,
-   there can be issues using the dedicated mux modes for cs.
-*/
-
-/* ------------------------------------------------------------------------ */
-
-static const int wand_spi1_chipselect[] = { IMX_GPIO_NR(2, 30) };
-
-/* platform device */
-static const struct spi_imx_master wand_spi1_data = {
-	.chipselect     = (int *)wand_spi1_chipselect,
-	.num_chipselect = ARRAY_SIZE(wand_spi1_chipselect),
-};
-
-/* ------------------------------------------------------------------------ */
-
-static const int wand_spi2_chipselect[] = { IMX_GPIO_NR(2, 26), IMX_GPIO_NR(2, 27) };
-
-static const struct spi_imx_master wand_spi2_data = {
-	.chipselect     = (int *)wand_spi2_chipselect,
-	.num_chipselect = ARRAY_SIZE(wand_spi2_chipselect),
-};
-
-/* ------------------------------------------------------------------------ */
-
-static void __init wand_init_spi(void) {
-
-	wand_mux_pads_init_spi();
-
-	imx6q_add_ecspi(0, &wand_spi1_data);
-	imx6q_add_ecspi(1, &wand_spi2_data);
-}
-
-/****************************************************************************
- *                                                                          
- * Vivante GPU/VPU
- *                                                                          
- ****************************************************************************/
-
-static struct viv_gpu_platform_data wand_gpu_pdata = {
-	.reserved_mem_size = SZ_128M + SZ_64M - SZ_16M,
-};
-
-static __init void wand_init_gpu(void) {
-	imx_add_viv_gpu(&imx6_gpu_data, &wand_gpu_pdata);
-        imx6q_add_vpu();
-        imx6q_add_v4l2_output(0);
-}
-
+#else
+static inline void wand_init_edm(void) { ; } ;
+#endif
 /*****************************************************************************
  *                                                                           
  * Init clocks and early boot console                                      
@@ -1006,7 +1004,8 @@ static __init void wand_init_gpu(void) {
 
 extern void __iomem *twd_base;
 
-static void __init wand_init_timer(void) {
+static void __init wand_init_timer(void)
+{
 	struct clk *uart_clk;
 #ifdef CONFIG_LOCAL_TIMERS
 	twd_base = ioremap(LOCAL_TWD_ADDR, SZ_256);
@@ -1055,7 +1054,7 @@ static void wand_init_ion(void)
 static inline void wand_init_ion(void) {;}
 #endif
 
-static void wand_init_wdt(void)
+static __init void wand_init_wdt(void)
 {
 #if defined(CONFIG_IMX_HAVE_PLATFORM_IMX2_WDT) && defined(CONFIG_IMX2_WDT)
 	imx6q_add_imx2_wdt(0, NULL);
@@ -1067,11 +1066,14 @@ static void __init fixup_wand_board(struct machine_desc *desc, struct tag *tags,
 {
 	char *str;
 	struct tag *t;
+#if 0
 	int i = 0;
 	struct ipuv3_fb_platform_data *pdata_fb = wand_fb_pdata;
+#endif
 
 	for_each_tag(t, tags) {
 		if (t->hdr.tag == ATAG_CMDLINE) {
+		#if 0
 			str = t->u.cmdline.cmdline;
 			str = strstr(str, "fbmem=");
 			if (str != NULL) {
@@ -1083,42 +1085,56 @@ static void __init fixup_wand_board(struct machine_desc *desc, struct tag *tags,
 					pdata_fb[i++].res_size[0] = memparse(str, &str);
 				}
 			}
+		#endif
 		#if defined(CONFIG_ION)
 			/* ION reserved memory */
 			str = t->u.cmdline.cmdline;
 			str = strstr(str, "ionmem=");
 			if (str != NULL) {
-				str += 7;
+				str += strlen("ionmem=");
 				wand_ion_data.heaps[0].size = memparse(str, &str);
 			}
 		#endif
+		#if 0
 			/* Primary framebuffer base address */
 			str = t->u.cmdline.cmdline;
 			str = strstr(str, "fb0base=");
 			if (str != NULL) {
-				str += 8;
+				str += strlen("fb0base=");
 				pdata_fb[0].res_base[0] =
 						simple_strtol(str, &str, 16);
 			}
+		#endif
 			/* GPU reserved memory */
 			str = t->u.cmdline.cmdline;
 			str = strstr(str, "gpumem=");
 			if (str != NULL) {
-				str += 7;
+				str += strlen("gpumem=");
 				wand_gpu_pdata.reserved_mem_size = memparse(str, &str);
 			}
+			str = t->u.cmdline.cmdline;
+			str = strstr(str, "fs_sdcard=");
+			if (str != NULL) {
+				str += strlen("fs_sdcard=");
+				fs_in_sdcard = memparse(str, &str);
+			}
+	#if defined(CONFIG_EDM)
+			str = t->u.cmdline.cmdline;
+			str = strstr(str, "expansion=");
+			if (str != NULL) {
+				str += strlen("expansion=");
+				edm_expansion = str;
+			}
+			str = t->u.cmdline.cmdline;
+			str = strstr(str, "baseboard=");
+			if (str != NULL) {
+				str += strlen("baseboard=");
+				edm_baseboard = str;
+			}
+	#endif
 			break;
 		}
 	}
-
-	/* Associate Wandboard Specific to EDM Structure*/
-	wand_external_gpios_to_edm_gpios();
-        
-	edm_i2c[0] = 0;
-	edm_i2c[1] = 1;
-	edm_i2c[2] = 2;
-	edm_ddc = 0;
-        
 }
 
 #ifdef CONFIG_ANDROID_RAM_CONSOLE
@@ -1133,19 +1149,27 @@ static struct platform_device android_ram_console = {
 	.resource = &ram_console_resource,
 };
 
-static int __init imx6x_add_ram_console(void)
+static int __init wand_init_ram_console(void)
 {
 	return platform_device_register(&android_ram_console);
 }
 #else
-#define imx6x_add_ram_console() do {} while (0)
+#define wand_init_ram_console() do {} while (0)
 #endif
 
 #include <linux/memblock.h>
 static void __init wand_reserve(void)
 {
 	phys_addr_t phys;
-	int i, fb0_reserved = 0, fb_array_size;
+	phys_addr_t total_mem = 0;
+	int i;
+	struct meminfo *mi = &meminfo;
+
+	for (i = 0; i < mi->nr_banks; i++)
+		total_mem += mi->bank[i].size;
+
+#if 0
+	int fb0_reserved = 0, fb_array_size;
 
 	/*
 	 * Reserve primary framebuffer memory if its base address
@@ -1169,13 +1193,14 @@ static void __init wand_reserve(void)
 		if (wand_fb_pdata[i].res_size[0]) {
 			/* Reserve for other background buffer. */
 			phys = memblock_alloc_base(wand_fb_pdata[i].res_size[0],
-						SZ_4K, SZ_2G);
+						SZ_4K, total_mem);
 			memblock_remove(phys, wand_fb_pdata[i].res_size[0]);
 			wand_fb_pdata[i].res_base[0] = phys;
 		}
+#endif
 
 #ifdef CONFIG_ANDROID_RAM_CONSOLE
-	phys = memblock_alloc_base(SZ_1M, SZ_4K, SZ_1G);
+	phys = memblock_alloc_base(SZ_1M, SZ_4K, total_mem);
 	printk("EDWARD :  ram console init at phys 0x%x\n",phys);
 	memblock_remove(phys, SZ_1M);
 	memblock_free(phys, SZ_1M);
@@ -1187,7 +1212,7 @@ static void __init wand_reserve(void)
 	if (wand_gpu_pdata.reserved_mem_size) {
 		printk("EDWARD : GPU_Reserved Memory equals to %d\n",wand_gpu_pdata.reserved_mem_size);
 			phys = memblock_alloc_base(wand_gpu_pdata.reserved_mem_size,
-						   SZ_4K, SZ_2G);
+						   SZ_4K, total_mem);
 		printk("EDWARD :  gpumem init at phys 0x%x\n",phys);
 		memblock_remove(phys, wand_gpu_pdata.reserved_mem_size);
 		wand_gpu_pdata.reserved_mem_base = phys;
@@ -1215,17 +1240,17 @@ extern char *gp_reg_id;
 extern char *soc_reg_id;
 extern u32 enable_ldo_mode;
 
-static void __init wand_board_init(void) {
+static void __init wand_board_init(void)
+{
 
-	if(enable_ldo_mode == LDO_MODE_BYPASSED)
-	{
+	if (enable_ldo_mode == LDO_MODE_BYPASSED) {
 		gp_reg_id = "DUMMY_VDDCORE";
 		soc_reg_id = "DUMMY_VDDSOC";
 	}
-
+	wand_init_edm();
 	wand_init_dma();
 	wand_init_uart();
-	imx6x_add_ram_console();
+	wand_init_ram_console();
 
 	wand_init_sd();
 	wand_init_i2c();
@@ -1246,19 +1271,19 @@ static void __init wand_board_init(void) {
 	wand_init_external_gpios();
 	wand_init_spi();
 	wand_init_gpu();
+	wand_init_caam();
 	wand_init_pcie();
 }
-
 
 /* ------------------------------------------------------------------------ */
         
 MACHINE_START(WANDBOARD, "Freescale i.MX 6Quad/DualLite/Solo Wandboard")
-	.boot_params	= MX6_PHYS_OFFSET + 0x100,
-	.fixup 		= fixup_wand_board,
-	.map_io		= mx6_map_io,
-	.init_irq	= mx6_init_irq,
-	.init_machine	= wand_board_init,
-	.timer		= &wand_timer,
-	.reserve	= wand_reserve,
+	.boot_params    = MX6_PHYS_OFFSET + 0x100,
+	.fixup          = fixup_wand_board,
+	.map_io         = mx6_map_io,
+	.init_irq       = mx6_init_irq,
+	.init_machine   = wand_board_init,
+	.timer          = &wand_timer,
+	.reserve        = wand_reserve,
 MACHINE_END
 

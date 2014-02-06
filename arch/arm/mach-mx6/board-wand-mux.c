@@ -262,6 +262,7 @@ void wand_mux_pads_init_external_gpios(void)
 	EDM_SET_PAD(PAD_SD3_RST__GPIO_7_8);  /* P264 */ /*SD3_RST*/
 }
 
+#if defined(CONFIG_EDM)
 void wand_external_gpios_to_edm_gpios(void)
 {
 	/* Associate EDM-CF-IMX6 Specific to EDM Structure*/
@@ -276,6 +277,7 @@ void wand_external_gpios_to_edm_gpios(void)
 	edm_external_gpio[8] = IMX_GPIO_NR(4, 5);  /* P263 */ /*GPIO_19*/
 	edm_external_gpio[9] = IMX_GPIO_NR(7, 8);  /* P264 */ /*SD3_RST*/
 }
+#endif
 
 /****************************************************************************
  *                                                                          
@@ -292,6 +294,8 @@ void wand_mux_pads_init_spi(void)
 	EDM_SET_PAD(PAD_EIM_CS0__ECSPI2_SCLK);
 	EDM_SET_PAD(PAD_EIM_CS1__ECSPI2_MOSI);
 	EDM_SET_PAD(PAD_EIM_OE__ECSPI2_MISO);
+/* The choice of using gpios for chipselect is deliberate,
+   there can be issues using the dedicated mux modes for cs.*/
 	EDM_SET_PAD(PAD_EIM_RW__GPIO_2_26);
 	EDM_SET_PAD(PAD_EIM_LBA__GPIO_2_27);
 }
@@ -302,7 +306,7 @@ void wand_mux_pads_init_spi(void)
  *                                                                          
  ****************************************************************************/
 
-void wand_mux_pads_init_lcdif(void)
+void wand_mux_pads_init_ipu1_lcd0(void)
 {
 	EDM_SET_PAD(PAD_DI0_DISP_CLK__IPU1_DI0_DISP_CLK);
 	EDM_SET_PAD(PAD_DI0_PIN2__IPU1_DI0_PIN2);		// HSync 
@@ -335,7 +339,7 @@ void wand_mux_pads_init_lcdif(void)
 	EDM_SET_PAD(PAD_DISP0_DAT23__IPU1_DISP0_DAT_23);
 }
 
-void wand_mux_pads_init_ipu2_lcdif(void)
+void wand_mux_pads_init_ipu2_lcd0(void)
 {
 	if (!cpu_is_mx6q())
 		return;
@@ -379,11 +383,6 @@ void wand_mux_pads_init_ipu2_lcdif(void)
 
 void wand_mux_pads_init_lvds(void)
 {
-        EDM_SET_PAD(PAD_SD4_DAT0__GPIO_2_8);
-        EDM_SET_PAD(PAD_SD4_DAT1__GPIO_2_9);
-        EDM_SET_PAD(PAD_SD4_DAT2__GPIO_2_10);
-        EDM_SET_PAD(PAD_SD4_DAT3__GPIO_2_11);
-        
         EDM_SET_PAD(PAD_LVDS0_CLK_P__LDB_LVDS0_CLK);
         EDM_SET_PAD(PAD_LVDS0_TX0_P__LDB_LVDS0_TX0);
         EDM_SET_PAD(PAD_LVDS0_TX1_P__LDB_LVDS0_TX1);
