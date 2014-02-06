@@ -1,5 +1,5 @@
 /*
-    Wandboard pin-mux file. 
+    Wandboard pin-mux file.
     Copyright (C) 2013 Edward Lin
 
     This program is free software; you can redistribute it and/or modify
@@ -21,121 +21,114 @@
 #include <linux/edm.h>
 
 /****************************************************************************
- *                                                                          
+ *
  * SD init
  *
  * SD1 is routed to EDM connector (external SD on edm_cf_imx6 baseboard)
  * SD2 is WiFi
  * SD3 is boot SD on the module
- *                                                                          
+ *
  ****************************************************************************/
 void edm_cf_imx6_mux_pads_init_sdmmc(unsigned int port, int speed)
 {
 	unsigned int index;
 
-	if(speed==200)
+	if (speed == 200)
 		index = 2;
-	else if(speed==100)
+	else if (speed == 100)
 		index = 1;
 	else
 		index = 0;
 
-	switch(port)
-	{
-		case 0:
-			EDM_SET_PAD(PAD_SD1_CLK__USDHC1_CLK_50MHZ_40OHM);
-			EDM_SET_PAD(PAD_SD1_CMD__USDHC1_CMD_50MHZ_40OHM);
-			EDM_SET_PAD(PAD_SD1_DAT0__USDHC1_DAT0_50MHZ_40OHM);
-			EDM_SET_PAD(PAD_SD1_DAT1__USDHC1_DAT1_50MHZ_40OHM);
-			EDM_SET_PAD(PAD_SD1_DAT2__USDHC1_DAT2_50MHZ_40OHM);
-			EDM_SET_PAD(PAD_SD1_DAT3__USDHC1_DAT3_50MHZ_40OHM);
-			break;
-		case 1:
-			EDM_SET_PAD(PAD_SD2_CLK__USDHC2_CLK);
-			EDM_SET_PAD(PAD_SD2_CMD__USDHC2_CMD);
-			EDM_SET_PAD(PAD_SD2_DAT0__USDHC2_DAT0);
-			EDM_SET_PAD(PAD_SD2_DAT1__USDHC2_DAT1);
-			EDM_SET_PAD(PAD_SD2_DAT2__USDHC2_DAT2);
-			EDM_SET_PAD(PAD_SD2_DAT3__USDHC2_DAT3);
-			break;
-		case 2:
-			if(index==2)
-			{
-				EDM_SET_PAD(PAD_SD3_CLK__USDHC3_CLK_200MHZ);
-				EDM_SET_PAD(PAD_SD3_CMD__USDHC3_CMD_200MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT0__USDHC3_DAT0_200MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT1__USDHC3_DAT1_200MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT2__USDHC3_DAT2_200MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT3__USDHC3_DAT3_200MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT4__USDHC3_DAT4_200MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT5__USDHC3_DAT5_200MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT6__USDHC3_DAT6_200MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT7__USDHC3_DAT7_200MHZ);
-			}
-			else if(index==1)
-			{
-				EDM_SET_PAD(PAD_SD3_CLK__USDHC3_CLK_100MHZ);
-				EDM_SET_PAD(PAD_SD3_CMD__USDHC3_CMD_100MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT0__USDHC3_DAT0_100MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT1__USDHC3_DAT1_100MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT2__USDHC3_DAT2_100MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT3__USDHC3_DAT3_100MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT4__USDHC3_DAT4_100MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT5__USDHC3_DAT5_100MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT6__USDHC3_DAT6_100MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT7__USDHC3_DAT7_100MHZ);
-			}
-			else
-			{
-				EDM_SET_PAD(PAD_SD3_CLK__USDHC3_CLK_50MHZ);
-				EDM_SET_PAD(PAD_SD3_CMD__USDHC3_CMD_50MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT0__USDHC3_DAT0_50MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT1__USDHC3_DAT1_50MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT2__USDHC3_DAT2_50MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT3__USDHC3_DAT3_50MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT4__USDHC3_DAT4_50MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT5__USDHC3_DAT5_50MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT6__USDHC3_DAT6_50MHZ);
-				EDM_SET_PAD(PAD_SD3_DAT7__USDHC3_DAT7_50MHZ);
-			}
-			break;
-		default:
-			break;
+	switch (port) {
+	case 0:
+		EDM_SET_PAD(PAD_SD1_CLK__USDHC1_CLK_50MHZ_40OHM);
+		EDM_SET_PAD(PAD_SD1_CMD__USDHC1_CMD_50MHZ_40OHM);
+		EDM_SET_PAD(PAD_SD1_DAT0__USDHC1_DAT0_50MHZ_40OHM);
+		EDM_SET_PAD(PAD_SD1_DAT1__USDHC1_DAT1_50MHZ_40OHM);
+		EDM_SET_PAD(PAD_SD1_DAT2__USDHC1_DAT2_50MHZ_40OHM);
+		EDM_SET_PAD(PAD_SD1_DAT3__USDHC1_DAT3_50MHZ_40OHM);
+		break;
+	case 1:
+		EDM_SET_PAD(PAD_SD2_CLK__USDHC2_CLK);
+		EDM_SET_PAD(PAD_SD2_CMD__USDHC2_CMD);
+		EDM_SET_PAD(PAD_SD2_DAT0__USDHC2_DAT0);
+		EDM_SET_PAD(PAD_SD2_DAT1__USDHC2_DAT1);
+		EDM_SET_PAD(PAD_SD2_DAT2__USDHC2_DAT2);
+		EDM_SET_PAD(PAD_SD2_DAT3__USDHC2_DAT3);
+		break;
+	case 2:
+		if (index == 2) {
+			EDM_SET_PAD(PAD_SD3_CLK__USDHC3_CLK_200MHZ);
+			EDM_SET_PAD(PAD_SD3_CMD__USDHC3_CMD_200MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT0__USDHC3_DAT0_200MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT1__USDHC3_DAT1_200MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT2__USDHC3_DAT2_200MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT3__USDHC3_DAT3_200MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT4__USDHC3_DAT4_200MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT5__USDHC3_DAT5_200MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT6__USDHC3_DAT6_200MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT7__USDHC3_DAT7_200MHZ);
+		} else if (index == 1) {
+			EDM_SET_PAD(PAD_SD3_CLK__USDHC3_CLK_100MHZ);
+			EDM_SET_PAD(PAD_SD3_CMD__USDHC3_CMD_100MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT0__USDHC3_DAT0_100MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT1__USDHC3_DAT1_100MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT2__USDHC3_DAT2_100MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT3__USDHC3_DAT3_100MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT4__USDHC3_DAT4_100MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT5__USDHC3_DAT5_100MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT6__USDHC3_DAT6_100MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT7__USDHC3_DAT7_100MHZ);
+		} else {
+			EDM_SET_PAD(PAD_SD3_CLK__USDHC3_CLK_50MHZ);
+			EDM_SET_PAD(PAD_SD3_CMD__USDHC3_CMD_50MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT0__USDHC3_DAT0_50MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT1__USDHC3_DAT1_50MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT2__USDHC3_DAT2_50MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT3__USDHC3_DAT3_50MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT4__USDHC3_DAT4_50MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT5__USDHC3_DAT5_50MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT6__USDHC3_DAT6_50MHZ);
+			EDM_SET_PAD(PAD_SD3_DAT7__USDHC3_DAT7_50MHZ);
+		}
+		break;
+	default:
+		break;
 	}
 }
 
 /****************************************************************************
- *                                                                          
+ *
  * I2C
- *                                                                          
+ *
  ****************************************************************************/
 
 void edm_cf_imx6_mux_pads_init_i2c(int port)
 {
-	switch(port)
-	{
-		case 0:
-			EDM_SET_PAD(PAD_EIM_D21__I2C1_SCL);
-			EDM_SET_PAD(PAD_EIM_D28__I2C1_SDA);
-			break;
-		case 1:
-			EDM_SET_PAD(PAD_KEY_COL3__I2C2_SCL);
-			EDM_SET_PAD(PAD_KEY_ROW3__I2C2_SDA);
-			break;
-		case 2:
-			EDM_SET_PAD(PAD_GPIO_5__I2C3_SCL);
-			EDM_SET_PAD(PAD_GPIO_16__I2C3_SDA);
-			break;
-		default:
-			printk("Invalid Port Selection : %d\n",port);
+	switch (port) {
+	case 0:
+		EDM_SET_PAD(PAD_EIM_D21__I2C1_SCL);
+		EDM_SET_PAD(PAD_EIM_D28__I2C1_SDA);
+		break;
+	case 1:
+		EDM_SET_PAD(PAD_KEY_COL3__I2C2_SCL);
+		EDM_SET_PAD(PAD_KEY_ROW3__I2C2_SDA);
+		break;
+	case 2:
+		EDM_SET_PAD(PAD_GPIO_5__I2C3_SCL);
+		EDM_SET_PAD(PAD_GPIO_16__I2C3_SDA);
+		break;
+	default:
+		printk("Invalid Port Selection : %d\n", port);
 	}
 }
 		
 
 /****************************************************************************
- *                                                                          
+ *
  * Initialize debug console (UART1)
- *                                                                          
+ *
  ****************************************************************************/
 
 void edm_cf_imx6_mux_pads_init_uart(void)
@@ -147,39 +140,39 @@ void edm_cf_imx6_mux_pads_init_uart(void)
 	EDM_SET_PAD(PAD_EIM_D20__UART1_RTS);
 
 	/* UART 2 */
-	EDM_SET_PAD( PAD_SD4_DAT4__UART2_RXD );
-	EDM_SET_PAD( PAD_SD4_DAT5__UART2_RTS );
-	EDM_SET_PAD( PAD_SD4_DAT6__UART2_CTS );
-	EDM_SET_PAD( PAD_SD4_DAT7__UART2_TXD );
+	EDM_SET_PAD(PAD_SD4_DAT4__UART2_RXD);
+	EDM_SET_PAD(PAD_SD4_DAT5__UART2_RTS);
+	EDM_SET_PAD(PAD_SD4_DAT6__UART2_CTS);
+	EDM_SET_PAD(PAD_SD4_DAT7__UART2_TXD);
 }
 	
 
 /****************************************************************************
- *                                                                          
+ *
  * Initialize sound (SSI, ASRC, AUD3 channel and S/PDIF)
- *                                                                          
+ *
  ****************************************************************************/
 void edm_cf_imx6_mux_pads_init_audio(void)
 {
-        EDM_SET_PAD(PAD_CSI0_DAT4__AUDMUX_AUD3_TXC);
-        EDM_SET_PAD(PAD_CSI0_DAT5__AUDMUX_AUD3_TXD);
-        EDM_SET_PAD(PAD_CSI0_DAT6__AUDMUX_AUD3_TXFS);
-        EDM_SET_PAD(PAD_CSI0_DAT7__AUDMUX_AUD3_RXD);
-        EDM_SET_PAD(PAD_GPIO_0__CCM_CLKO);
+	EDM_SET_PAD(PAD_CSI0_DAT4__AUDMUX_AUD3_TXC);
+	EDM_SET_PAD(PAD_CSI0_DAT5__AUDMUX_AUD3_TXD);
+	EDM_SET_PAD(PAD_CSI0_DAT6__AUDMUX_AUD3_TXFS);
+	EDM_SET_PAD(PAD_CSI0_DAT7__AUDMUX_AUD3_RXD);
+	EDM_SET_PAD(PAD_GPIO_0__CCM_CLKO);
 }
 
 /*****************************************************************************
- *                                                                           
+ *
  * Init FEC and AR8031 PHY
- *                                                                            
+ *
  *****************************************************************************/
 void edm_cf_imx6_mux_pads_init_ethernet(void)
 {
-        EDM_SET_PAD(PAD_ENET_MDIO__ENET_MDIO);
-        EDM_SET_PAD(PAD_ENET_MDC__ENET_MDC);
-        
-        EDM_SET_PAD(PAD_ENET_REF_CLK__ENET_TX_CLK);
-        
+	EDM_SET_PAD(PAD_ENET_MDIO__ENET_MDIO);
+	EDM_SET_PAD(PAD_ENET_MDC__ENET_MDC);
+
+	EDM_SET_PAD(PAD_ENET_REF_CLK__ENET_TX_CLK);
+
 	EDM_SET_PAD(PAD_RGMII_TXC__ENET_RGMII_TXC);
 	EDM_SET_PAD(PAD_RGMII_TD0__ENET_RGMII_TD0);
 	EDM_SET_PAD(PAD_RGMII_TD1__ENET_RGMII_TD1);
@@ -192,28 +185,28 @@ void edm_cf_imx6_mux_pads_init_ethernet(void)
 	EDM_SET_PAD(PAD_RGMII_RD2__ENET_RGMII_RD2);
 	EDM_SET_PAD(PAD_RGMII_RD3__ENET_RGMII_RD3);
 	EDM_SET_PAD(PAD_RGMII_RX_CTL__ENET_RGMII_RX_CTL);
-                
-        EDM_SET_PAD(PAD_ENET_TX_EN__GPIO_1_28);
-        EDM_SET_PAD(PAD_EIM_D29__GPIO_3_29);
+
+	EDM_SET_PAD(PAD_ENET_TX_EN__GPIO_1_28);
+	EDM_SET_PAD(PAD_EIM_D29__GPIO_3_29);
 }
 
 /****************************************************************************
- *                                                                          
+ *
  * USB
- *                                                                          
+ *
  ****************************************************************************/
 void edm_cf_imx6_mux_pads_init_usb(void)
 {
-        EDM_SET_PAD(PAD_GPIO_9__GPIO_1_9);
-        EDM_SET_PAD(PAD_GPIO_1__USBOTG_ID);
-        EDM_SET_PAD(PAD_EIM_D22__GPIO_3_22);
-        EDM_SET_PAD(PAD_EIM_D30__GPIO_3_30);
+	EDM_SET_PAD(PAD_GPIO_9__GPIO_1_9);
+	EDM_SET_PAD(PAD_GPIO_1__USBOTG_ID);
+	EDM_SET_PAD(PAD_EIM_D22__GPIO_3_22);
+	EDM_SET_PAD(PAD_EIM_D30__GPIO_3_30);
 }       
 
 /****************************************************************************
- *                                                                          
+ *
  * WiFi
- *                                                                          
+ *
  ****************************************************************************/
 void edm_cf_imx6_mux_pads_init_wifi(void)
 {
@@ -229,9 +222,9 @@ void edm_cf_imx6_mux_pads_init_wifi(void)
 	
 
 /****************************************************************************
- *                                                                          
+ *
  * Bluetooth
- *                                                                          
+ *
  ****************************************************************************/
 void edm_cf_imx6_mux_pads_init_bluetooth(void)
 {
@@ -255,24 +248,25 @@ void edm_cf_imx6_mux_pads_init_bluetooth(void)
 }
 
 /****************************************************************************
- *                                                                          
+ *
  * Expansion pin header GPIOs
- *                                                                          
+ *
  ****************************************************************************/
 void edm_cf_imx6_mux_pads_init_external_gpios(void)
 {
-	EDM_SET_PAD( PAD_CSI0_DAT19__GPIO_6_5 );
-	EDM_SET_PAD( PAD_CSI0_DAT16__GPIO_6_2 );
-	EDM_SET_PAD( PAD_CSI0_DAT18__GPIO_6_4 );
-	EDM_SET_PAD( PAD_EIM_D27__GPIO_3_27 );
-	EDM_SET_PAD( PAD_EIM_D26__GPIO_3_26 );
-	EDM_SET_PAD( PAD_EIM_BCLK__GPIO_6_31 );
-	EDM_SET_PAD( PAD_CSI0_DAT17__GPIO_6_3 );
-	EDM_SET_PAD( PAD_ENET_RX_ER__GPIO_1_24 );
-	EDM_SET_PAD( PAD_GPIO_19__GPIO_4_5 );
-	EDM_SET_PAD( PAD_SD3_RST__GPIO_7_8 );
+	EDM_SET_PAD(PAD_CSI0_DAT19__GPIO_6_5);
+	EDM_SET_PAD(PAD_CSI0_DAT16__GPIO_6_2);
+	EDM_SET_PAD(PAD_CSI0_DAT18__GPIO_6_4);
+	EDM_SET_PAD(PAD_EIM_D27__GPIO_3_27);
+	EDM_SET_PAD(PAD_EIM_D26__GPIO_3_26);
+	EDM_SET_PAD(PAD_EIM_BCLK__GPIO_6_31);
+	EDM_SET_PAD(PAD_CSI0_DAT17__GPIO_6_3);
+	EDM_SET_PAD(PAD_ENET_RX_ER__GPIO_1_24);
+	EDM_SET_PAD(PAD_GPIO_19__GPIO_4_5);
+	EDM_SET_PAD(PAD_SD3_RST__GPIO_7_8);
 }
 
+#if defined(CONFIG_EDM)
 void edm_cf_imx6_external_gpios_to_edm_gpios(void)
 {
 	/* Associate EDM-CF-IMX6 Specific to EDM Structure*/
@@ -287,11 +281,12 @@ void edm_cf_imx6_external_gpios_to_edm_gpios(void)
 	edm_external_gpio[8] = IMX_GPIO_NR(4, 5);  /* P263 */ /*GPIO_19*/
 	edm_external_gpio[9] = IMX_GPIO_NR(7, 8);  /* P264 */ /*SD3_RST*/
 }
+#endif
 
 /****************************************************************************
- *                                                                          
+ *
  * SPI - while not used on the Wandboard, the pins are routed out
- *                                                                          
+ *
  ****************************************************************************/
 void edm_cf_imx6_mux_pads_init_spi(void)
 {
@@ -308,12 +303,12 @@ void edm_cf_imx6_mux_pads_init_spi(void)
 }
 
 /****************************************************************************
- *                                                                          
+ *
  * LCDIF - DISPLAY PARALLEL INTERFACE
- *                                                                          
+ *
  ****************************************************************************/
 
-void edm_cf_imx6_mux_pads_init_lcdif(void)
+void edm_cf_imx6_mux_pads_init_ipu1_lcd0(void)
 {
 	EDM_SET_PAD(PAD_DI0_DISP_CLK__IPU1_DI0_DISP_CLK);
 	EDM_SET_PAD(PAD_DI0_PIN2__IPU1_DI0_PIN2);		// HSync 
@@ -346,7 +341,7 @@ void edm_cf_imx6_mux_pads_init_lcdif(void)
 	EDM_SET_PAD(PAD_DISP0_DAT23__IPU1_DISP0_DAT_23);
 }
 
-void edm_cf_imx6_mux_pads_init_ipu2_lcdif(void)
+void edm_cf_imx6_mux_pads_init_ipu2_lcd0(void)
 {
 	if (!cpu_is_mx6q())
 		return;
@@ -383,23 +378,25 @@ void edm_cf_imx6_mux_pads_init_ipu2_lcdif(void)
 }
 
 /****************************************************************************
- *                                                                          
+ *
  * LDB - LVDS Display
- *                                                                          
+ *
  ****************************************************************************/
 
 void edm_cf_imx6_mux_pads_init_lvds(void)
 {
-        EDM_SET_PAD(PAD_SD4_DAT0__GPIO_2_8);
-        EDM_SET_PAD(PAD_SD4_DAT1__GPIO_2_9);
-        EDM_SET_PAD(PAD_SD4_DAT2__GPIO_2_10);
-        EDM_SET_PAD(PAD_SD4_DAT3__GPIO_2_11);
-        
-        EDM_SET_PAD(PAD_LVDS0_CLK_P__LDB_LVDS0_CLK);
-        EDM_SET_PAD(PAD_LVDS0_TX0_P__LDB_LVDS0_TX0);
-        EDM_SET_PAD(PAD_LVDS0_TX1_P__LDB_LVDS0_TX1);
-        EDM_SET_PAD(PAD_LVDS0_TX2_P__LDB_LVDS0_TX2);
-        EDM_SET_PAD(PAD_LVDS0_TX3_P__LDB_LVDS0_TX3);
+	/* LVDS 0 */
+	EDM_SET_PAD(PAD_LVDS0_CLK_P__LDB_LVDS0_CLK);
+	EDM_SET_PAD(PAD_LVDS0_TX0_P__LDB_LVDS0_TX0);
+	EDM_SET_PAD(PAD_LVDS0_TX1_P__LDB_LVDS0_TX1);
+	EDM_SET_PAD(PAD_LVDS0_TX2_P__LDB_LVDS0_TX2);
+	EDM_SET_PAD(PAD_LVDS0_TX3_P__LDB_LVDS0_TX3);
+	/* LVDS 1 */
+	EDM_SET_PAD(PAD_LVDS1_CLK_P__LDB_LVDS1_CLK);
+	EDM_SET_PAD(PAD_LVDS1_TX0_P__LDB_LVDS1_TX0);
+	EDM_SET_PAD(PAD_LVDS1_TX1_P__LDB_LVDS1_TX1);
+	EDM_SET_PAD(PAD_LVDS1_TX2_P__LDB_LVDS1_TX2);
+	EDM_SET_PAD(PAD_LVDS1_TX3_P__LDB_LVDS1_TX3);
 }
 
 

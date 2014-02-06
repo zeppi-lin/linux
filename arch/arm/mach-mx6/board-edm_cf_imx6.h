@@ -42,8 +42,8 @@ extern void edm_cf_imx6_mux_pads_init_bluetooth(void);
 extern void edm_cf_imx6_mux_pads_init_external_gpios(void);
 extern void edm_cf_imx6_external_gpios_to_edm_gpios(void);
 extern void edm_cf_imx6_mux_pads_init_spi(void);
-extern void edm_cf_imx6_mux_pads_init_lcdif(void);
-extern void edm_cf_imx6_mux_pads_init_ipu2_lcdif(void);
+extern void edm_cf_imx6_mux_pads_init_ipu1_lcd0(void);
+extern void edm_cf_imx6_mux_pads_init_ipu2_lcd0(void);
 extern void edm_cf_imx6_mux_pads_init_lvds(void);
 
 #endif
