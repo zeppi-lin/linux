@@ -121,8 +121,6 @@ static int isl29023_set_power_state(struct i2c_client *client, int state)
  * LUX calculation
  */
 
-#define	ISL29023_MAX_LUX		1846
-
 /*
  * This function is described into Taos ISL29023 Designer's Notebook
  * pages 2, 3.
@@ -150,10 +148,8 @@ static int isl29023_calculate_lux(u8 ch0, u8 ch1)
 	0x55bf == 334.9
 	*/
 
-	if(isl29023_debug)
-		printk("Sense light Ambient is %d\n", lux);
 	/* LUX range check */
-	return lux > ISL29023_MAX_LUX ? ISL29023_MAX_LUX : lux;
+	return lux;
 }
 
 static void isl29023_light_enable(struct isl29023_data *data)
@@ -292,8 +288,6 @@ static int __isl29023_show_lux(struct i2c_client *client)
 
 	/* Do the job */
 	ret = isl29023_calculate_lux(lux_lsb, lux_msb);
-	if (ret < 0)
-		return ret;
 	return ret;
 }
 
@@ -540,6 +534,7 @@ static int __devexit isl29023_remove(struct i2c_client *client)
 	sysfs_remove_group(&data->light_input_dev->dev.kobj,
 			   &isl29023_attr_group);
 
+	hrtimer_cancel(&data->timer);
 	destroy_workqueue(data->wq);
 	input_unregister_device(data->light_input_dev);
 
