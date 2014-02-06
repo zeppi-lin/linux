@@ -178,7 +178,7 @@ static struct spi_board_info fairy_spidev_data  = {
 
 /* ------------------------------------------------------------------------ */
 
-void __init fairy_init_ts(void)
+static void __init fairy_init_ts(void)
 {
 	gpio_request(edm_external_gpio[fairy_tsc2046_gpio_index], "tsc2046 irq");
 	fairy_tsc2046_spi_data.irq = gpio_to_irq(edm_external_gpio[fairy_tsc2046_gpio_index]);
@@ -197,12 +197,11 @@ static struct i2c_board_info fairy_isl29023_binfo = {
 	.irq            = -EINVAL,
 };
 
-void __init fairy_init_lightsensor(void)
+static void __init fairy_init_lightsensor(void)
 {
 	fairy_isl29023_binfo.irq  = gpio_to_irq(edm_external_gpio[6]),
 	i2c_register_board_info(edm_i2c[2], &fairy_isl29023_binfo, 1);
 }
-
 
 /****************************************************************************
  *
@@ -217,7 +216,7 @@ static struct i2c_board_info fairy_mag3110_binfo = {
 	.platform_data = (void *)&mag3110_position,
 };
 
-void __init fairy_init_compass(void)
+static void __init fairy_init_compass(void)
 {
 	fairy_mag3110_binfo.irq = gpio_to_irq(edm_external_gpio[5]),
 	i2c_register_board_info(edm_i2c[2], &fairy_mag3110_binfo, 1);
@@ -246,7 +245,7 @@ static const struct i2c_board_info fairy_lis331dlh_binfo = {
 	.platform_data = &fairy_lis331dlh_data,
 };
 
-void __init fairy_init_gsensor(void)
+static void __init fairy_init_gsensor(void)
 {
 	i2c_register_board_info(edm_i2c[2], &fairy_lis331dlh_binfo, 1);
 }
@@ -261,13 +260,74 @@ static const struct i2c_board_info fairy_ds1337_binfo = {
 	I2C_BOARD_INFO("ds1337", 0x68),
 };
 
-void __init fairy_init_rtc(void)
+static void __init fairy_init_rtc(void)
 {
 	i2c_register_board_info(edm_i2c[2], &fairy_ds1337_binfo, 1);
 }
 
+/****************************************************************************
+ *
+ * EEPROM
+ *
+ ****************************************************************************/
+
+#if defined(CONFIG_EEPROM_AT24) || defined(CONFIG_EEPROM_AT24_MODULE)
+#include <linux/i2c/at24.h>
+
+#define EEPROM_READ_STR_OFFSET	0x0
+
+static void fairy_board_setup(struct memory_accessor *mem_acc, void *context)
+{
+	char eeprom_read_test_string[20];
+	int ret = 0;
+
+	ret = mem_acc->read(mem_acc, (char *)&eeprom_read_test_string,
+		EEPROM_READ_STR_OFFSET, sizeof(eeprom_read_test_string));
+
+	printk("%s:Test on Baseboard Identification.\n", __func__);
+	/*This should access content of eeprom*/
+}
+
+static struct at24_platform_data fairy_at24c08_pdata = {
+	.byte_len   = SZ_8K / 8,
+	.page_size  = 16,
+	.flags      = AT24_FLAG_ADDR16,
+	.setup      = fairy_board_setup,
+	.context    = (void *)NULL,
+};
+
+static const struct i2c_board_info fairy_at24c08__binfo = {
+	I2C_BOARD_INFO("24c08", 0x50),
+	.platform_data  = &fairy_at24c08_pdata,
+};
+
+static void __init fairy_init_eeprom(void)
+{
+	i2c_register_board_info(edm_i2c[2], &fairy_at24c08__binfo, 1);
+}
+#else
+static inline void fairy_init_eeprom(void) { ; }
+#endif
 
 /****************************************************************************
+ *
+ * TLV320 codec
+ *
+ ****************************************************************************/
+
+/* TODO: Read EEPROM on baseboard using I2C */
+/*
+static const struct i2c_board_info fairy_tlv320aic3x_board_info = {
+	I2C_BOARD_INFO("tlv320aic3x", 0x1b),
+};
+
+void __init fairy_init_tlv320aic3x(void)
+{
+	i2c_register_board_info(edm_i2c[1], &fairy_tlv320aic3x_board_info, 1);
+}
+*/
+
+/*****************************************************************************
  *
  * main-function for fairyboard
  *
@@ -281,7 +341,7 @@ static __init int fairy_init(void)
 	fairy_init_compass();
 	fairy_init_gsensor();
 	fairy_init_rtc();
-
+	fairy_init_eeprom();
 	return 0;
 }
 arch_initcall_sync(fairy_init);
