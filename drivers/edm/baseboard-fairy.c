@@ -23,55 +23,55 @@
  ****************************************************************************/
 
 static struct regulator_consumer_supply fairy_sgtl5000_consumer_vdda = {
-	.supply = "VDDA",
-	.dev_name = "0-000a", /* Modified load time */
+	.supply     = "VDDA",
+	.dev_name   = "0-000a", /* Modified load time */
 };
 
 /* ------------------------------------------------------------------------ */
 
 static struct regulator_consumer_supply fairy_sgtl5000_consumer_vddio = {
-	.supply = "VDDIO",
-	.dev_name = "0-000a", /* Modified load time */
+	.supply     = "VDDIO",
+	.dev_name   = "0-000a", /* Modified load time */
 };
 
 /* ------------------------------------------------------------------------ */
 
 static struct regulator_init_data fairy_sgtl5000_vdda_reg_initdata = {
-	.num_consumer_supplies = 1,
-	.consumer_supplies = &fairy_sgtl5000_consumer_vdda,
+	.num_consumer_supplies  = 1,
+	.consumer_supplies      = &fairy_sgtl5000_consumer_vdda,
 };
 
 /* ------------------------------------------------------------------------ */
 
 static struct regulator_init_data fairy_sgtl5000_vddio_reg_initdata = {
-	.num_consumer_supplies = 1,
-	.consumer_supplies = &fairy_sgtl5000_consumer_vddio,
+	.num_consumer_supplies  = 1,
+	.consumer_supplies      = &fairy_sgtl5000_consumer_vddio,
 };
 
 /* ------------------------------------------------------------------------ */
 
 static struct fixed_voltage_config fairy_sgtl5000_vdda_reg_config = {
-	.supply_name		= "VDDA",
-	.microvolts		= 2500000,
-	.gpio			= -1,
-	.init_data		= &fairy_sgtl5000_vdda_reg_initdata,
+	.supply_name    = "VDDA",
+	.microvolts     = 2500000,
+	.gpio           = -1,
+	.init_data      = &fairy_sgtl5000_vdda_reg_initdata,
 };
 
 /* ------------------------------------------------------------------------ */
 
 static struct fixed_voltage_config fairy_sgtl5000_vddio_reg_config = {
-	.supply_name		= "VDDIO",
-	.microvolts		= 3300000,
-	.gpio			= -1,
-	.init_data		= &fairy_sgtl5000_vddio_reg_initdata,
+	.supply_name    = "VDDIO",
+	.microvolts     = 3300000,
+	.gpio           = -1,
+	.init_data      = &fairy_sgtl5000_vddio_reg_initdata,
 };
 
 /* ------------------------------------------------------------------------ */
 
 static struct platform_device fairy_sgtl5000_vdda_reg_devices = {
-	.name	= "reg-fixed-voltage",
-	.id	= 0,
-	.dev	= {
+	.name   = "reg-fixed-voltage",
+	.id     = 0,
+	.dev    = {
 		.platform_data = &fairy_sgtl5000_vdda_reg_config,
 	},
 };
@@ -79,9 +79,9 @@ static struct platform_device fairy_sgtl5000_vdda_reg_devices = {
 /* ------------------------------------------------------------------------ */
 
 static struct platform_device fairy_sgtl5000_vddio_reg_devices = {
-	.name	= "reg-fixed-voltage",
-	.id	= 1,
-	.dev	= {
+	.name   = "reg-fixed-voltage",
+	.id     = 1,
+	.dev    = {
 		.platform_data = &fairy_sgtl5000_vddio_reg_config,
 	},
 };
@@ -89,7 +89,7 @@ static struct platform_device fairy_sgtl5000_vddio_reg_devices = {
 /* ------------------------------------------------------------------------ */
 
 static struct platform_device fairy_audio_device = {
-	.name = "imx-sgtl5000",
+	.name   = "imx-sgtl5000",
 };
 
 /* ------------------------------------------------------------------------ */
@@ -104,7 +104,8 @@ static char fairy_sgtl5000_dev_name[8] = "0-000a";
 
 static __init int fairy_init_sgtl5000(void)
 {
-	int ret = -ENODEV, i2c_bus = 1;
+	int ret = -ENODEV;
+	int i2c_bus = 1;
 
 	if (edm_audio_data[0].enabled && edm_i2c[i2c_bus] >= 0) {
 		edm_audio_data[0].bus_type = EDM_BUS_I2C;
@@ -128,14 +129,14 @@ static __init int fairy_init_sgtl5000(void)
 
 /****************************************************************************
  *
- * ADS7846 Touchscreen
+ * ADS7846/TSC2046 Touchscreen
  *
  ****************************************************************************/
 
 #include <linux/spi/ads7846.h>
 #include <linux/spi/spi.h>
 
-static int fairy_tsc2046_gpio_index = 4;
+static int fairy_tsc2046_gpio_index = 8;
 
 int fairy_get_tsc2046_pendown_state(void)
 {
@@ -143,36 +144,36 @@ int fairy_get_tsc2046_pendown_state(void)
 }
 
 static struct ads7846_platform_data fairy_tsc2046_config = {
-	.x_max			= 0x0fff,
-	.y_max			= 0x0fff,
-	.pressure_max		= 1024,
-	.get_pendown_state	= fairy_get_tsc2046_pendown_state,
-	.keep_vref_on		= 1,
-	.wakeup			= true,
-	.model			= 7845,
+	.x_max              = 0x0fff,
+	.y_max              = 0x0fff,
+	.pressure_max       = 1024,
+	.get_pendown_state  = fairy_get_tsc2046_pendown_state,
+	.keep_vref_on       = 1,
+	.wakeup             = true,
+	.model              = 7846,
 
-	.x_plate_ohms  = 90,
-	.y_plate_ohms  = 90,
-	.debounce_max  = 70,
-	.debounce_tol  = 3,
-	.debounce_rep  = 2,
+	.x_plate_ohms       = 90,
+	.y_plate_ohms       = 90,
+	.debounce_max       = 70,
+	.debounce_tol       = 3,
+	.debounce_rep       = 2,
 	.settle_delay_usecs = 150
 };
 
-static struct spi_board_info fairy_tsc2046_spi_data  = {
-	.modalias		= "ads7846",
-	.bus_num		= 0,
-	.chip_select		= 0,
-	.max_speed_hz		= 1500000,
-	.irq			= -EINVAL, /* Set programmatically */
-	.platform_data		= &fairy_tsc2046_config,
+static struct spi_board_info fairy_tsc2046_spi_data = {
+	.modalias       = "ads7846",
+	.bus_num        = 0,
+	.chip_select    = 0,
+	.max_speed_hz   = 1500000,
+	.irq            = -EINVAL, /* Set programmatically */
+	.platform_data  = &fairy_tsc2046_config,
 };
 
 static struct spi_board_info fairy_spidev_data  = {
-	.modalias		= "spidev",
-	.bus_num		= 0,
-	.chip_select		= 0,
-	.max_speed_hz		= 300000,
+	.modalias       = "spidev",
+	.bus_num        = 0,
+	.chip_select    = 0,
+	.max_speed_hz   = 300000,
 };
 
 /* ------------------------------------------------------------------------ */
@@ -184,7 +185,6 @@ void __init fairy_init_ts(void)
 	spi_register_board_info(&fairy_tsc2046_spi_data, 1);
 }
 
-
 /****************************************************************************
  *
  * ISL20923 light sensor
@@ -193,8 +193,8 @@ void __init fairy_init_ts(void)
 
 static struct i2c_board_info fairy_isl29023_binfo = {
 	I2C_BOARD_INFO("isl29018", 0x44),
-	.platform_data = NULL,
-	.irq = -EINVAL,
+	.platform_data  = NULL,
+	.irq            = -EINVAL,
 };
 
 void __init fairy_init_lightsensor(void)
@@ -214,7 +214,6 @@ static const int mag3110_position = 1;
 
 static struct i2c_board_info fairy_mag3110_binfo = {
 	I2C_BOARD_INFO("mag3110", 0x0e),
-
 	.platform_data = (void *)&mag3110_position,
 };
 
@@ -223,7 +222,6 @@ void __init fairy_init_compass(void)
 	fairy_mag3110_binfo.irq = gpio_to_irq(edm_external_gpio[5]),
 	i2c_register_board_info(edm_i2c[2], &fairy_mag3110_binfo, 1);
 }
-
 
 /****************************************************************************
  *
@@ -252,7 +250,6 @@ void __init fairy_init_gsensor(void)
 {
 	i2c_register_board_info(edm_i2c[2], &fairy_lis331dlh_binfo, 1);
 }
-
 
 /****************************************************************************
  *
