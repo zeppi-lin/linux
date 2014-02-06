@@ -55,6 +55,11 @@ static struct spi_board_info wandqc_spidev_data = {
 static int __init wandqc_init(void)
 {
 	int i;
+	if (edm_expansion == NULL)
+		return 0;
+	else if (strncmp(edm_expansion, "wandqc", strlen("wandqc")))
+		return 0;
+
 	gpio_free(WANDQC_TSC2046_IRQ);
 
 	gpio_request(WANDQC_TSC2046_IRQ,  "WANDQC_TSC2046_IRQ");

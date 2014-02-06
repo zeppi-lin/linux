@@ -7,6 +7,12 @@
 #include <linux/gpio.h>
 #include <linux/module.h>
 
+char *edm_expansion = NULL;
+EXPORT_SYMBOL_GPL(edm_expansion);
+char *edm_baseboard = NULL;
+EXPORT_SYMBOL_GPL(edm_baseboard);
+
+
 int edm_external_gpio[((EDM_N_EXTERNAL_GPIO) < 10 ? 10 : (EDM_N_EXTERNAL_GPIO))] = {
 	[0] = -EINVAL,
 	[1] = -EINVAL,
@@ -73,7 +79,7 @@ static void __init edm_exit(void)
 		gpio_free(edm_external_gpio[i]);
 }
 
-subsys_initcall(edm_init);
+arch_initcall_sync(edm_init);
 module_exit(edm_exit);
 MODULE_AUTHOR("Tapani Utriainen <tapani@technexion.com>");
 MODULE_DESCRIPTION("EDM SoM <-> baseboard connection driver");

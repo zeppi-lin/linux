@@ -335,6 +335,11 @@ void __init fairy_init_tlv320aic3x(void)
 
 static __init int fairy_init(void)
 {
+	if (edm_baseboard == NULL)
+		return 0;
+	else if (strncmp(edm_baseboard, "fairy", strlen("fairy")))
+		return 0;
+
 	fairy_init_sgtl5000();
 	fairy_init_ts();
 	fairy_init_lightsensor();

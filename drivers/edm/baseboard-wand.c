@@ -134,6 +134,11 @@ static __init int wandbase_init_sgtl5000(void)
 
 static __init int wandbase_init(void)
 {
+	if (edm_baseboard == NULL)
+		return 0;
+	else if (strncmp(edm_baseboard, "wand", strlen("wand")))
+		return 0;
+
 	return wandbase_init_sgtl5000();
 }
 arch_initcall_sync(wandbase_init);

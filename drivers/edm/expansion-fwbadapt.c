@@ -107,6 +107,10 @@ static inline int __init fwbadapt_gpio_keys_init(void) { return 0; }
 static __init int fwbadapt_init(void)
 {
 	int ret = 0;
+	if (edm_expansion == NULL)
+		return 0;
+	else if (strncmp(edm_expansion, "fwbadapt", strlen("fwbadapt")))
+		return 0;
 
 	ret += fwbadapt_init_prism();
 	ret += fwbadapt_gpio_keys_init();

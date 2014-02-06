@@ -4,6 +4,10 @@
 
 #include <linux/types.h>
 
+extern char *edm_expansion;
+
+extern char *edm_baseboard;
+
 /* External GPIOs correspond to pins 255 -- 264, respectively
 */
 #define EDM_N_EXTERNAL_GPIO 10
