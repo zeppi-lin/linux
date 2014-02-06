@@ -42,7 +42,7 @@
 #define MAG3110_AC_OFFSET       0
 #define MAG3110_DR_MODE_MASK    (0x7 << 5)
 #define MAG3110_DR_MODE_OFFSET  5
-#define MAG3110_IRQ_USED	0
+#define MAG3110_IRQ_USED        0
 
 #define POLL_INTERVAL_MAX       500
 #define POLL_INTERVAL_MIN       1

@@ -176,15 +176,15 @@ void edm_disp_str_to_timing(struct edm_video_timing *timing, char * timing_str)
 err_out:
 	printk("%s : Incorrect input timing_str, zero all outputs!!\n",
 								__func__);
-	timing->pixclock	= 0;
-	timing->hres		= 0;
-	timing->hfp		= 0;
-	timing->hbp		= 0;
-	timing->hsw		= 0;
-	timing->vres		= 0;
-	timing->vfp		= 0;
-	timing->vbp		= 0;
-	timing->vsw		= 0;
+	timing->pixclock    = 0;
+	timing->hres        = 0;
+	timing->hfp         = 0;
+	timing->hbp         = 0;
+	timing->hsw         = 0;
+	timing->vres        = 0;
+	timing->vfp         = 0;
+	timing->vbp         = 0;
+	timing->vsw         = 0;
 
 	return;
 }
