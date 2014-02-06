@@ -46,7 +46,7 @@ static struct snd_soc_jack_pin hs_jack_pins[] = {
 	{
 		.pin = "Ext Spk",
 		.mask = SND_JACK_HEADPHONE,
-		.invert = 1,
+	/*	.invert = 1,	*/
 	},
 };
 
