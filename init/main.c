@@ -766,6 +766,7 @@ static noinline int init_post(void)
 					"defaults...\n", execute_command);
 	}
 	run_init_process("/sbin/init");
+	run_init_process("/init");	/* Android */
 	run_init_process("/etc/init");
 	run_init_process("/bin/init");
 	run_init_process("/bin/sh");
