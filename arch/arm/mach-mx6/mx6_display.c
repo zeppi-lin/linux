@@ -741,87 +741,87 @@ enable_transmitter:
 			mx6_disp_ctrls->hdmi_enable(1);
 	}
 
-#if MX6_DISPLAY_DEBUG_ON
-	printk("\nList of Transmitter IPU Setting:\n");
+	printk("mx6_display : list of transmitter settings:\n");
 	if (disp_ch[MX6_HDMI] == 1)
-		printk("HDMI : IPU %d, DI %d\n", mx6_hdmi_core_data.ipu_id, mx6_hdmi_core_data.disp_id);
+		printk("mx6_display : hdmi : ipu%d, di%d\n", mx6_hdmi_core_data.ipu_id, mx6_hdmi_core_data.disp_id);
 
 	if ((disp_ch[MX6_LVDS0] == 1) || (disp_ch[MX6_LVDS1] == 1) || (disp_ch[MX6_LVDSD] == 1)) {
 		char string[200];
 		int i;
-		printk("LVDS Mode : ");
+		printk("mx6_display : lvds mode : ");
 		switch (mx6_ldb_data.mode) {
 		case LDB_SIN0:
-			printk("LDB_SIN0\n");
+			printk("single channel on di0\n");
 			break;
 		case LDB_SIN1:
-			printk("LDB_SIN1\n");
+			printk("single channel on di1\n");
 			break;
 		case LDB_SEP0:
-			printk("LDB_SEP0\n");
+			printk("two separate channels, lvds0 on di0\n");
 			break;
 		case LDB_SEP1:
-			printk("LDB_SEP1\n");
+			printk("two separate channels, lvds1 on di1\n");
 			break;
 		case LDB_DUL_DI0:
-			printk("LDB_DUL_DI0\n");
+			printk("duplicate di0 to both channels\n");
 			break;
 		case LDB_DUL_DI1:
-			printk("LDB_DUL_DI1\n");
+			printk("duplicate di1 to both channels\n");
 			break;
 		case LDB_SPL_DI0:
-			printk("LDB_SPL_DI0\n");
+			printk("split di0 to both channels, odd/even\n");
 			break;
 		case LDB_SPL_DI1:
-			printk("LDB_SPL_DI1\n");
+			printk("split di1 to both channels, odd/even\n");
 			break;
 		default:
-			printk("Unknown\n");
+			printk("unknown settins for lvds\n");
 			break;
 		}
-		printk("LVDS 1st : IPU %d, DI %d\n", mx6_ldb_data.ipu_id, mx6_ldb_data.disp_id);
-		for (i = 0; i < 200; i++)
-			string[i] = '\0';
-		if (mx6_ldb_data.lvds0_timing != NULL)
-			sprintf(string, "lvds0_timing : %u,%u,%u,%u,%u,%u,%u,%u,%u",
-				mx6_ldb_data.lvds0_timing->pixclock,
-				mx6_ldb_data.lvds0_timing->hres,
-				mx6_ldb_data.lvds0_timing->hfp,
-				mx6_ldb_data.lvds0_timing->hbp,
-				mx6_ldb_data.lvds0_timing->hsw,
-				mx6_ldb_data.lvds0_timing->vres,
-				mx6_ldb_data.lvds0_timing->vfp,
-				mx6_ldb_data.lvds0_timing->vbp,
-				mx6_ldb_data.lvds0_timing->vsw);
-		else
-			sprintf(string, "lvds0_timing : 0,0,0,0,0,0,0,0,0");
-		printk("%s\n", string);
-		printk("LVDS 2nd : IPU %d, DI %d\n", mx6_ldb_data.sec_ipu_id, mx6_ldb_data.sec_disp_id);
-		for (i = 0; i < 200; i++)
-			string[i] = '\0';
-		if (mx6_ldb_data.lvds1_timing != NULL)
-			sprintf(string, "lvds1_timing : %u,%u,%u,%u,%u,%u,%u,%u,%u",
-				mx6_ldb_data.lvds1_timing->pixclock,
-				mx6_ldb_data.lvds1_timing->hres,
-				mx6_ldb_data.lvds1_timing->hfp,
-				mx6_ldb_data.lvds1_timing->hbp,
-				mx6_ldb_data.lvds1_timing->hsw,
-				mx6_ldb_data.lvds1_timing->vres,
-				mx6_ldb_data.lvds1_timing->vfp,
-				mx6_ldb_data.lvds1_timing->vbp,
-				mx6_ldb_data.lvds1_timing->vsw);
-		else
-			sprintf(string, "lvds1_timing : 0,0,0,0,0,0,0,0,0");
-		printk("%s\n", string);
+		if ((disp_ch[MX6_LVDS0] == 1) || (disp_ch[MX6_LVDSD] == 1)) {
+			printk("mx6_display : lvds 1st : ipu%d, di%d\n", mx6_ldb_data.ipu_id, mx6_ldb_data.disp_id);
+			for (i = 0; i < 200; i++)
+				string[i] = '\0';
+			if (mx6_ldb_data.lvds0_timing != NULL) {
+				sprintf(string, "mx6_display : custom lvds0 timing : %u,%u,%u,%u,%u,%u,%u,%u,%u",
+					mx6_ldb_data.lvds0_timing->pixclock,
+					mx6_ldb_data.lvds0_timing->hres,
+					mx6_ldb_data.lvds0_timing->hfp,
+					mx6_ldb_data.lvds0_timing->hbp,
+					mx6_ldb_data.lvds0_timing->hsw,
+					mx6_ldb_data.lvds0_timing->vres,
+					mx6_ldb_data.lvds0_timing->vfp,
+					mx6_ldb_data.lvds0_timing->vbp,
+					mx6_ldb_data.lvds0_timing->vsw);
+				printk("%s\n", string);
+			}
+		}
+		if ((disp_ch[MX6_LVDS1] == 1) || (disp_ch[MX6_LVDSD] == 1)) {
+			printk("mx6_display : lvds 2nd : ipu%d, di%d\n", mx6_ldb_data.sec_ipu_id, mx6_ldb_data.sec_disp_id);
+			for (i = 0; i < 200; i++)
+				string[i] = '\0';
+			if (mx6_ldb_data.lvds1_timing != NULL) {
+				sprintf(string, "mx6_display : custom lvds1 timing : %u,%u,%u,%u,%u,%u,%u,%u,%u",
+					mx6_ldb_data.lvds1_timing->pixclock,
+					mx6_ldb_data.lvds1_timing->hres,
+					mx6_ldb_data.lvds1_timing->hfp,
+					mx6_ldb_data.lvds1_timing->hbp,
+					mx6_ldb_data.lvds1_timing->hsw,
+					mx6_ldb_data.lvds1_timing->vres,
+					mx6_ldb_data.lvds1_timing->vfp,
+					mx6_ldb_data.lvds1_timing->vbp,
+					mx6_ldb_data.lvds1_timing->vsw);
+				printk("%s\n", string);
+			}
+		}
 
 	}
 
 	if (disp_ch[MX6_LCD0] == 1)
-		printk("LCD0 : IPU %d, DI %d\n", mx6_lcdif_data.ipu_id, mx6_lcdif_data.disp_id);
+		printk("mx6_display : lcd0 : ipu%d, di%d\n", mx6_lcdif_data.ipu_id, mx6_lcdif_data.disp_id);
 
 	if (disp_ch[MX6_DSI0] == 1)
-		printk("DSI0 : IPU %d, DI %d\n", mx6_dsi_pdata.ipu_id, mx6_dsi_pdata.disp_id);
-#endif
+		printk("mx6_display : dsi0 : ipu%d, di%d\n", mx6_dsi_pdata.ipu_id, mx6_dsi_pdata.disp_id);
 }
 
 /****************************************************************************
