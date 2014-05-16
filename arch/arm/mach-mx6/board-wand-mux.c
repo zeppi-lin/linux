@@ -203,7 +203,7 @@ void wand_mux_pads_init_usb(void)
  * WiFi
  *                                                                          
  ****************************************************************************/
-void wand_mux_pads_init_wifi(void)
+void wand_mux_pads_init_wifi_bcm4329(void)
 {
         /* ref_on, enable 32k clock */
         EDM_SET_PAD(PAD_EIM_EB1__GPIO_2_29);
@@ -217,13 +217,23 @@ void wand_mux_pads_init_wifi(void)
         EDM_SET_PAD(PAD_ENET_TXD0__GPIO_1_30);
 }
 	
-
+void wand_mux_pads_init_wifi_bcm4330(void)
+{
+        /* bt/wifi power, signal to FDC6331L */
+	EDM_SET_PAD( PAD_CSI0_DAT13__GPIO_5_31 );
+	/* wl reset */
+	EDM_SET_PAD( PAD_CSI0_DAT14__GPIO_6_0 );
+	/* wifi on*/
+	EDM_SET_PAD( PAD_ENET_RXD1__GPIO_1_26 );
+	/* host wake */
+	EDM_SET_PAD( PAD_ENET_TXD1__GPIO_1_29 );
+}
 /****************************************************************************
  *                                                                          
  * Bluetooth
  *                                                                          
  ****************************************************************************/
-void wand_mux_pads_init_bluetooth(void)
+void wand_mux_pads_init_bluetooth_bcm4329(void)
 {
         /* BT_ON, BT_WAKE and BT_HOST_WAKE */
         EDM_SET_PAD(PAD_EIM_DA13__GPIO_3_13);
@@ -241,6 +251,27 @@ void wand_mux_pads_init_bluetooth(void)
         EDM_SET_PAD(PAD_EIM_D24__UART3_TXD);
         EDM_SET_PAD(PAD_EIM_D25__UART3_RXD);
         EDM_SET_PAD(PAD_EIM_EB3__UART3_RTS);
+}
+
+void wand_mux_pads_init_bluetooth_bcm4330(void)
+{
+        /* BT_REGON, BT_RSTN, BT_WAKE and BT_HOST_WAKE */
+	EDM_SET_PAD(PAD_CSI0_DATA_EN__GPIO_5_20);
+	EDM_SET_PAD(PAD_CSI0_VSYNC__GPIO_5_21);
+	EDM_SET_PAD(PAD_ENET_TXD0__GPIO_1_30);
+	EDM_SET_PAD(PAD_CSI0_DAT12__GPIO_5_30);
+
+	/* AUD5 channel goes to BT */
+	EDM_SET_PAD(PAD_KEY_COL0__AUDMUX_AUD5_TXC);
+	EDM_SET_PAD(PAD_KEY_ROW0__AUDMUX_AUD5_TXD);
+	EDM_SET_PAD(PAD_KEY_COL1__AUDMUX_AUD5_TXFS);
+	EDM_SET_PAD(PAD_KEY_ROW1__AUDMUX_AUD5_RXD);
+
+	/* Bluetooth is on UART3*/
+	EDM_SET_PAD(PAD_EIM_D23__UART3_CTS);
+	EDM_SET_PAD(PAD_EIM_D24__UART3_TXD);
+	EDM_SET_PAD(PAD_EIM_D25__UART3_RXD);
+	EDM_SET_PAD(PAD_EIM_EB3__UART3_RTS);
 }
 
 /****************************************************************************
