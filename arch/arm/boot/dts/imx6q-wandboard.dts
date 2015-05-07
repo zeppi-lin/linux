@@ -20,6 +20,9 @@
 		reg = <0x10000000 0x80000000>;
 	};
 };
+&mxcfb1 {
+	status = "okay";
+};
 
 &sata {
 	status = "okay";
