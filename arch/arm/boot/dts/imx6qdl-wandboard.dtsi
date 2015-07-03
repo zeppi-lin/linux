@@ -232,7 +232,7 @@
 
 	backlight_lvds {
 		compatible = "pwm-backlight";
-		pwms = <&pwm4 0 5000000>;
+		pwms = <&pwm3 0 5000000>;
 		brightness-levels = <0 4 8 16 32 64 128 255>;
 		default-brightness-level = <7>;
 	};
@@ -1253,7 +1253,7 @@ reference manual.
 	status = "okay";
 };
 
-#if 0
+
 &pwm1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm1_1>;
@@ -1262,10 +1262,11 @@ reference manual.
 
 &pwm3 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_pwm3_2>;
+	pinctrl-0 = <&pinctrl_pwm3_1>;
 	status = "okay";
 };
 
+#if 0
 &pwm4 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm4_2>;
