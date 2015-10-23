@@ -1277,7 +1277,11 @@ reference manual.
 &spdif {
         pinctrl-names = "default";
         pinctrl-0 = <&pinctrl_spdif_wand>;
-        status = "okay";
+	assigned-clocks = <&clks IMX6QDL_CLK_SPDIF_SEL>,
+			  <&clks IMX6QDL_CLK_SPDIF_PODF>;
+	assigned-clock-parents = <&clks IMX6QDL_CLK_PLL3_PFD3_454M>;
+	assigned-clock-rates = <0>, <227368421>;
+	status = "okay";
 };
 
 &ssi1 {
