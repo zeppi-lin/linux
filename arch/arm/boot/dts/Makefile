@@ -283,7 +283,7 @@ dtb-$(CONFIG_SOC_IMX6Q) += \
 	imx6dl-tx6u-811x.dtb \
 	imx6dl-udoo.dtb \
 	imx6dl-sabresd-enetirq.dtb \
-	imx6dl-wandboard.dtb \
+	imx6dl-wandboard-revc1.dtb \
 	imx6dl-wandboard-revb1.dtb \
 	imx6q-arm2.dtb \
 	imx6q-arm2-hsic.dtb \
@@ -331,8 +331,6 @@ dtb-$(CONFIG_SOC_IMX6Q) += \
 	imx6q-tx6q-1020-comtft.dtb \
 	imx6q-tx6q-1110.dtb \
 	imx6q-udoo.dtb \
-	imx6q-wandboard.dtb \
-	imx6q-wandboard-revb1.dtb \
 	imx6dqscm-1gb-qwks-rev2-fix-ldo.dtb \
 	imx6dqscm-1gb-qwks-rev2-interleave-android-ldo.dtb \
 	imx6dqscm-1gb-qwks-rev2-wifi-fix-ldo.dtb \
@@ -345,6 +343,8 @@ dtb-$(CONFIG_SOC_IMX6Q) += \
 	imx6dqscm-1gb-qwks-rev3-fix-ldo.dtb \
 	imx6dqscm-1gb-qwks-rev3-hdcp-fix-ldo.dtb \
 	imx6dqscm-1gb-qwks-rev3-btwifi-fix-ldo.dtb
+	imx6q-wandboard-revc1.dtb \
+	imx6q-wandboard-revb1.dtb
 dtb-$(CONFIG_SOC_IMX6SL) += \
 	imx6sl-evk.dtb \
 	imx6sl-evk-btwifi.dtb \
