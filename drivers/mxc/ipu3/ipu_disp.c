@@ -1510,14 +1510,14 @@ int32_t ipu_init_sync_panel(struct ipu_soc *ipu, int disp, uint32_t pixel_clk,
 		}
 
 		if (sig.Hsync_pol) {
-			di_gen |= DI_GEN_POLARITY_2;
-			if (disp)
-				di_gen |= DI_GEN_POLARITY_7;
-		}
-		if (sig.Vsync_pol) {
 			di_gen |= DI_GEN_POLARITY_3;
 			if (disp)
 				di_gen |= DI_GEN_POLARITY_8;
+		}
+		if (sig.Vsync_pol) {
+			di_gen |= DI_GEN_POLARITY_2;
+			if (disp)
+				di_gen |= DI_GEN_POLARITY_7;
 		}
 	}
 	/* changinc DISP_CLK polarity: it can be wrong for some applications */
