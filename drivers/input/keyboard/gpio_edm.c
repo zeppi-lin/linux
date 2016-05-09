@@ -47,10 +47,13 @@ static int gpio_edm_setup_key(struct platform_device *pdev,
 			return error;
 		}
 
-		if(!strcmp(edm_data->direction,"in"))
+		if(!strcmp(edm_data->direction,"in")) {
 			gpio_direction_input(edm_data->gpio);
-		else
+		} else {
+			gpio_direction_output(edm_data->gpio,0);
+			msleep(20);
 			gpio_direction_output(edm_data->gpio,edm_data->value);
+		}
 
 		error = gpio_export(edm_data->gpio, true);
 		if (error < 0) {
@@ -63,14 +66,6 @@ static int gpio_edm_setup_key(struct platform_device *pdev,
 	}
 	else
 		goto fail;
-
-	/* bcm43xx BT reset only*/
-	if(!strcmp(desc,"bluetooth-on")) {
-		gpio_direction_output(edm_data->gpio,0);
-		msleep(15);
-		gpio_direction_output(edm_data->gpio,1);
-	}
-
 
 	return 0;
 
