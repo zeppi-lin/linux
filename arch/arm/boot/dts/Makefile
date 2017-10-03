@@ -344,7 +344,7 @@ dtb-$(CONFIG_SOC_IMX6Q) += \
 	imx6dqscm-1gb-evb-hdcp-fix-ldo.dtb \
 	imx6dqscm-1gb-qwks-rev3-fix-ldo.dtb \
 	imx6dqscm-1gb-qwks-rev3-hdcp-fix-ldo.dtb \
-	imx6dqscm-1gb-qwks-rev3-btwifi-fix-ldo.dtb
+	imx6dqscm-1gb-qwks-rev3-btwifi-fix-ldo.dtb \
 	imx6q-wandboard-revd1.dtb \
 	imx6q-wandboard-revc1.dtb \
 	imx6q-wandboard-revb1.dtb
