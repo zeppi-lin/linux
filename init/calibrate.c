@@ -277,6 +277,13 @@ void calibrate_delay(void)
 	static bool printed;
 	int this_cpu = smp_processor_id();
 
+        printk("*************************************\n");
+        printk("*                                   *\n");
+        printk("*           CIAO MONDO              *\n");
+        printk("*                                   *\n");
+        printk("*************************************\n");
+
+
 	if (per_cpu(cpu_loops_per_jiffy, this_cpu)) {
 		lpj = per_cpu(cpu_loops_per_jiffy, this_cpu);
 		if (!printed)
